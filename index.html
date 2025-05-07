@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剩余价值计算器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="theme-toggle">
+                <button id="themeToggle" aria-label="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <div class="settings-toggle">
+                <button id="settingsToggle" aria-label="打开设置">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+            <h1><i class="fas fa-calculator"></i> 剩余价值计算器 V3</h1>
+        </header>
+        
+        <main role="main">
+            <section class="calculator">
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="exchangeRate"><i class="fas fa-exchange-alt"></i> 当前汇率</label>
+                        <input type="number" id="exchangeRate" readonly>
+                        <small id="updateDate" class="update-time">更新时间: 0000/00/00</small>
+                    </div>
+                    <div class="form-group" style="display: none;">
+                        <label for="customRate"><i class="fas fa-edit"></i> 自定汇率</label>
+                        <input type="number" id="customRate" step="0.001">
+                    </div>
+                    <div class="form-group">
+                        <label for="currency"><i class="fas fa-globe"></i> 币种</label>
+                        <select id="currency">
+                            <option value="USD">美元 (USD)</option>
+                            <option value="AUD">澳币 (AUD)</option>
+                            <option value="CAD">加拿大元 (CAD)</option>
+                            <option value="CNY">人民币 (CNY)</option>
+                            <option value="EUR">欧元 (EUR)</option>
+                            <option value="GBP">英镑 (GBP)</option>
+                            <option value="HKD">港元 (HKD)</option>
+                            <option value="JPY">日元 (JPY)</option>
+                            <option value="KRW">韩元 (KRW)</option>
+                            <option value="SGD">新加坡元 (SGD)</option>
+                            <option value="TWD">新台币 (TWD)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="amount"><i class="fas fa-dollar-sign"></i> 续费金额</label>
+                        <input type="number" id="amount" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="cycle"><i class="fas fa-redo"></i> 续费周期</label>
+                        <select id="cycle">
+                            <option value="0"></option>
+                            <option value="1">月付</option>
+                            <option value="3">季付</option>
+                            <option value="6">半年付</option>
+                            <option value="12">年付</option>
+                            <option value="24">两年付</option>
+                            <option value="36">三年付</option>
+                            <option value="48">四年付</option>
+                            <option value="60">五年付</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="display: none;">
+                        <label for="bidAmount"><i class="fas fa-gavel"></i> 出价金额</label>
+                        <input type="number" id="bidAmount" step="0.01">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="transactionDate"><i class="far fa-calendar-check"></i> 交易日期</label>
+                        <input type="text" id="transactionDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiryDate"><i class="far fa-calendar-times"></i> 到期时间</label>
+                        <input type="text" id="expiryDate">
+                    </div>
+                </div>
+                
+                <button id="calculateBtn"><i class="fas fa-calculator"></i> 计算剩余价值</button>
+            </section>
+
+            <section id="calcResult" class="result">
+                <h2><i class="fas fa-chart-line"></i> 计算结果</h2>
+                <button id="screenshotBtn" class="screenshot-btn" title="截图上传到图床">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="result-label"><i class="far fa-calendar-alt"></i> 交易日期</span>
+                        <span id="resultDate" class="result-value">0000-00-00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label"><i class="fas fa-exchange-alt"></i> 外币汇率</span>
+                        <span id="resultForeignRate" class="result-value">0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label"><i class="fas fa-yen-sign"></i> 续费价格</span>
+                        <span id="resultPrice" class="result-value">0.00 人民币/年</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label"><i class="far fa-clock"></i> 剩余天数</span>
+                        <span id="resultDays" class="result-value">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label"><i class="far fa-calendar-check"></i> 到期日期</span>
+                        <span id="resultExpiry" class="result-value">0000-00-00</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="result-label"><i class="fas fa-coins"></i> 剩余价值</span>
+                        <span id="resultValue" class="result-value">0.000 元</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>
+                本项目: <a href="https://github.com/realnovicedev/vps_calculator_docker" target="_blank"><i class="fab fa-github"></i>剩余价值计算器 V3</a> | 
+                原项目: <a href="https://github.com/Tomzhao1016/vps_surplus_value" target="_blank"><i class="fab fa-github"></i>Tomzhao1016/剩余价值计算器</a>
+            </p>
+        </footer>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> 图床设置</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="imgHostType"><i class="fas fa-server"></i> 图床类型</label>
+                    <select id="imgHostType">
+                        <option value="LskyPro">LskyPro</option>
+                        <option value="EasyImages">EasyImages</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="imgHostUrl"><i class="fas fa-link"></i> 图床地址</label>
+                    <input type="url" id="imgHostUrl" placeholder="https://example.com">
+                    <small class="help-text">请输入完整地址，包括 https://</small>
+                </div>
+                <div class="form-group">
+                    <label for="imgHostToken"><i class="fas fa-key"></i> 图床 Token</label>
+                    <div class="input-with-toggle">
+                        <input type="password" id="imgHostToken" placeholder="可选">
+                        <button class="toggle-password" type="button">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <small class="help-text">可为空 即使用游客上传</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-link"></i> 复制格式</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="copyFormat" id="copyFormatMarkdown" value="markdown">
+                            <span>Markdown</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="copyFormat" id="copyFormatUrl" value="url" checked>
+                            <span>URL</span>
+                        </label>
+                    </div>
+                    <small class="help-text">选择截图后复制到剪贴板的格式</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="resetSettings" class="secondary-btn"><i class="fas fa-undo"></i> 重置</button>
+                <button id="saveSettings" class="primary-btn"><i class="fas fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+</body>
+</html>

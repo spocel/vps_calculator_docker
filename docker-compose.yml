@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  vps-calculator:
+    build: .
+    ports:
+      - "8089:80"
+    restart: unless-stopped
+    volumes:
+      - ./:/usr/share/nginx/html
+    environment:
+      - TZ=Asia/Shanghai

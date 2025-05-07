@@ -1,0 +1,941 @@
+/* 定义全局变量 - 亮色模式 */
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #a29bfe;
+    --background-color: #f9f9f9;
+    --card-background-color: #ffffff;
+    --text-color: #2d3436;
+    --border-color: #dfe6e9;
+    --hover-color: #e6e9ef;
+    --result-color: #00b894;
+    --error-color: #d63031;
+    --input-background: #e6e9ef;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-hover-color: rgba(0, 0, 0, 0.15);
+    --footer-color: #666;
+    --success-text: #ffffff;
+    --error-text: #ffffff;
+}
+
+/* 暗色模式变量 */
+[data-theme="dark"] {
+    --primary-color: #a29bfe;
+    --secondary-color: #6c5ce7;
+    --background-color: #222831;
+    --card-background-color: #393e46;
+    --text-color: #eeeeee;
+    --border-color: #4a4e53;
+    --hover-color: #32363d;
+    --result-color: #00b894;
+    --error-color: #ff6b6b;
+    --input-background: #32363d;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-hover-color: rgba(0, 0, 0, 0.4);
+    --footer-color: #aaaaaa;
+    --success-text: #ffffff;
+    --error-text: #ffffff;
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 100;
+}
+
+#themeToggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--card-background-color);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    padding: 0;
+    line-height: 1; /* 确保图标行高为1，防止偏移 */
+}
+
+#themeToggle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px var(--shadow-hover-color);
+}
+
+#themeToggle i {
+    display: block; /* 设置为块级元素 */
+    margin: 0; /* 移除所有margin */
+    padding: 0; /* 移除所有padding */
+}
+
+/* 重置基本样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 基本页面样式 */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 容器样式 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+}
+
+/* 页头样式 */
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    text-shadow: 2px 2px 4px var(--shadow-color);
+    transition: color 0.3s ease;
+}
+
+h1 i {
+    margin-right: 0.5rem;
+}
+
+/* 主要内容布局 */
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* 计算器和结果区域的共同样式 */
+.calculator, .result {
+    background-color: var(--card-background-color);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    padding: 2rem;
+    transition: all 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 结果区域特定样式 */
+.result {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+/* 悬停效果 */
+.calculator:hover, .result:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px var(--shadow-hover-color);
+}
+
+/* 输入组样式 */
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem; /* 减小间距 */
+    margin-bottom: 1rem; /* 减小底部边距 */
+}
+
+/* 表单组样式 */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 1rem; /* 减小底部边距 */
+}
+
+/* 标签样式 */
+label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.3rem; /* 减小底部边距 */
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+label i {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+/* 输入框和选择框样式 */
+input, select {
+    width: 100%;
+    padding: 0.6rem; /* 稍微减小内边距 */
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    background-color: var(--input-background);
+    color: var(--text-color);
+    margin-bottom: 0.3rem; /* 减小底部边距 */
+}
+
+/* 添加鼠标指针样式 */
+input[type="text"]#expiryDate,
+input[type="text"]#transactionDate {
+    cursor: pointer;
+}
+
+/* 输入框和选择框焦点样式 */
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+}
+
+/* 更新时间样式 */
+.update-time {
+    font-size: 0.75rem; /* 稍微减小字体大小 */
+    color: var(--footer-color);
+    position: absolute;
+    bottom: -1rem; /* 调整位置 */
+    left: 0;
+    transition: color 0.3s ease;
+}
+
+/* 按钮样式 */
+button {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease, background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+}
+
+button i {
+    margin-right: 0.5rem;
+}
+
+/* 结果标题样式 */
+.result h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.result h2 i {
+    margin-right: 0.5rem;
+}
+
+/* 结果网格样式 */
+.result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* 结果项样式 */
+.result-item {
+    background-color: var(--hover-color);
+    padding: 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease, background-color 0.3s ease;
+}
+
+.result-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+/* 结果标签样式 */
+.result-label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.result-label i {
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+/* 结果值样式 */
+.result-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+/* 高亮结果项样式 */
+.highlight {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.highlight .result-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.highlight .result-label i {
+    color: white;
+}
+
+.highlight .result-value {
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* 页脚样式 */
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--footer-color);
+    transition: color 0.3s ease;
+}
+
+/* 链接样式 */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+a i {
+    margin-right: 0.3rem;
+}
+
+/* 通知样式 */
+#notifications {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    z-index: 1000;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.notification {
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: var(--success-text);
+    font-weight: bold;
+    opacity: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification.success {
+    background-color: var(--result-color);
+}
+
+.notification.error {
+    background-color: var(--error-color);
+    color: var(--error-text);
+}
+
+.notification.warning {
+    background-color: #f39c12;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    #notifications {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        align-items: center;
+    }
+    
+    .notification {
+        width: 100%;
+        max-width: 100%;
+        text-align: center;
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+}
+
+/* Flatpickr 暗黑模式 */
+[data-theme="dark"] .flatpickr-calendar {
+    background: var(--card-background-color);
+    color: var(--text-color);
+    box-shadow: 0 3px 13px var(--shadow-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .flatpickr-months {
+    background-color: var(--card-background-color);
+}
+
+[data-theme="dark"] .flatpickr-month {
+    color: var(--text-color);
+    fill: var(--text-color);
+}
+
+[data-theme="dark"] .flatpickr-weekday {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .flatpickr-day {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .flatpickr-day.selected {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+[data-theme="dark"] .flatpickr-day:hover {
+    background-color: var(--hover-color);
+}
+
+[data-theme="dark"] .flatpickr-day.prevMonthDay, 
+[data-theme="dark"] .flatpickr-day.nextMonthDay {
+    color: var(--footer-color);
+}
+
+[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months {
+    color: var(--text-color);
+    background-color: var(--card-background-color);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    .result {
+        position: static;
+        margin-top: 2rem;
+    }
+
+    .input-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .theme-toggle {
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    #themeToggle {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    /* 容器padding调整 */
+    .container {
+        padding: 1rem;
+    }
+    
+    /* 标题大小调整 */
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    /* 主要内容布局 */
+    main {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    /* 计算器和结果区域调整 */
+    .calculator, .result {
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    /* 输入组样式调整 */
+    .input-group {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    /* 表单元素大小调整 */
+    input, select {
+        padding: 0.8rem;
+        font-size: 16px; /* 防止iOS自动缩放 */
+        height: 45px; /* 确保触摸区域足够大 */
+    }
+    
+    /* 按钮样式调整 */
+    button {
+        padding: 0.8rem;
+        height: 45px;
+        margin-top: 0.5rem;
+    }
+    
+    /* 结果区域调整 */
+    .result {
+        margin-top: 1.5rem;
+    }
+    
+    .result h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* 结果网格调整为单列 */
+    .result-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* 结果项样式调整 */
+    .result-item {
+        padding: 0.8rem;
+    }
+    
+    .result-label {
+        font-size: 0.85rem;
+    }
+    
+    .result-value {
+        font-size: 1.1rem;
+    }
+    
+    /* 高亮结果项调整 */
+    .highlight .result-value {
+        font-size: 1.3rem;
+    }
+}
+
+/* 增加触摸友好性的额外样式 */
+@media (max-width: 768px) {
+    /* 增加所有可点击元素的触摸区域 */
+    button, 
+    select, 
+    input[type="text"],
+    .result-item {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* 优化触摸反馈 */
+    button:active,
+    .result-item:active {
+        transform: scale(0.98);
+    }
+    
+    /* 调整通知位置和大小 */
+    .notification {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        text-align: center;
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+}
+
+/* 针对特小屏幕的额外优化 */
+@media (max-width: 320px) {
+    .container {
+        padding: 0.8rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .calculator, .result {
+        padding: 1rem;
+    }
+    
+    input, select, button {
+        font-size: 14px;
+    }
+}
+
+/* 加入鼠标选中和点击效果 */
+.highlight .result-value {
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.copy-icon {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.copy-icon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.highlight .result-value:active,
+.copy-icon:active {
+    transform: scale(0.95);
+}
+
+
+/* 结果区域标题栏样式 */
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    position: relative; /* 添加相对定位 */
+}
+
+/* 截图按钮样式 */
+.screenshot-btn {
+    width: 30px; /* 缩小按钮尺寸 */
+    height: 30px; /* 缩小按钮尺寸 */
+    border-radius: 50%; /* 改为圆形按钮 */
+    background-color: transparent; /* 背景透明 */
+    color: var(--primary-color); /* 图标颜色使用主题色 */
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    padding: 0;
+    box-shadow: none; /* 移除阴影 */
+    position: absolute;
+    right: 35px;
+    top: 38px;
+    line-height: 1;
+}
+
+.screenshot-btn:hover {
+    background-color: transparent; /* 悬停时保持透明 */
+    transform: scale(1.1); /* 悬停时稍微放大 */
+    box-shadow: none; /* 移除悬停时的阴影 */
+    color: var(--secondary-color); /* 悬停时变为次要颜色 */
+}
+
+.screenshot-btn i {
+    font-size: 1.2rem;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ------------------------------------- */
+/* 设置按钮样式 */
+.settings-toggle {
+    position: absolute;
+    top: 1.5rem;
+    right: 4.5rem;
+    z-index: 100;
+}
+
+#settingsToggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--card-background-color);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    padding: 0;
+    line-height: 1;
+}
+
+#settingsToggle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px var(--shadow-hover-color);
+}
+
+#settingsToggle i {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* 模态框样式 */
+.modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: var(--card-background-color);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+    transform: scale(0.9) translateY(-30px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                opacity 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.modal-header h2 i {
+    margin-right: 0.5rem;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background-color: var(--hover-color);
+    transform: none;
+    box-shadow: none;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 输入框带切换按钮 */
+.input-with-toggle {
+    position: relative;
+    display: flex;
+}
+
+.input-with-toggle input {
+    flex: 1;
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 40px;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: none;
+}
+
+.toggle-password:hover {
+    color: var(--primary-color);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 帮助文本样式 */
+.help-text {
+    font-size: 0.75rem;
+    color: var(--footer-color);
+    margin-top: 0.3rem;
+}
+
+/* 单选按钮组样式 */
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.radio-label input[type="radio"] {
+    width: auto;
+    margin: 0 0.5rem 0 0;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.radio-label input[type="radio"]:checked {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    box-shadow: inset 0 0 0 4px var(--card-background-color);
+}
+
+.radio-label input[type="radio"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2), inset 0 0 0 4px var(--card-background-color);
+}
+
+.radio-label span {
+    font-size: 0.95rem;
+}
+
+/* 按钮样式 */
+.primary-btn, .secondary-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: auto;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.primary-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.secondary-btn:hover {
+    background-color: var(--hover-color);
+    border-color: var(--text-color);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .settings-toggle {
+        top: 1rem;
+        right: 4rem;
+    }
+    
+    #settingsToggle {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .modal-content {
+        width: 95%;
+    }
+    
+    .modal-header, .modal-body, .modal-footer {
+        padding: 1rem;
+    }
+}
