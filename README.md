@@ -2,6 +2,8 @@
 
 剩余价值计算器是一个网页应用程序，旨在帮助用户计算域名、主机或其他周期性服务的剩余价值。它考虑了多种因素，如续费金额、汇率、续费周期和剩余天数，为用户提供准确的剩余价值估算。
 
+演示地址：https://jsq.888656.xyz/
+
 ![1746662340625.webp](https://img.888656.xyz/i/2025/05/08/681bf3bd515f6.webp)
 
 ## 功能特点
@@ -36,3 +38,10 @@ docker run -d --name=jsq -p 8089:80 bobby567/calculator:latest
 
 ## 许可协议
 本项目遵循原项目的许可协议。
+
+## 致谢
+- [er.aiuuo.com](https://er.aiuuo.com) - 提供实时汇率数据
+- [Dooongの公益图床](https://www.nodeseek.com/post-43196-1) - 提供公益图床
+- https://linux.do/t/topic/227730/27
+- [NodeSeek 编辑器增强脚本](https://www.nodeseek.com/post-74493-1) - 提供图床上传代码参考
+- 感谢claude 感谢mjj 感谢大鸡腿
