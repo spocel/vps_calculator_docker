@@ -574,30 +574,40 @@ function copyToClipboard(text) {
  * 初始化设置界面
  */
 function initSettings() { 
-        const savedSettings = localStorage.getItem('imgHostSettings');
+    const savedSettings = localStorage.getItem('imgHostSettings');
         
-        if (savedSettings) {
-            try {
-                const parsedSettings = JSON.parse(savedSettings);
+    if (savedSettings) {
+        // 不是第一次启动，加载保存的设置
+        const parsedSettings = JSON.parse(savedSettings);
                 
-                imgHost.type = parsedSettings.type || imgHost.type;
-                imgHost.url = parsedSettings.url || imgHost.url;
-                imgHost.token = parsedSettings.token || imgHost.token;
-                imgHost.copyFormat = parsedSettings.copyFormat || imgHost.copyFormat;
+        imgHost.type = parsedSettings.type || imgHost.type;
+        imgHost.url = parsedSettings.url || imgHost.url;
+        imgHost.token = parsedSettings.token || imgHost.token;
+        imgHost.copyFormat = parsedSettings.copyFormat || imgHost.copyFormat;
                 
-                document.getElementById('imgHostType').value = imgHost.type;
-                document.getElementById('imgHostUrl').value = imgHost.url;
-                document.getElementById('imgHostToken').value = imgHost.token || '';
+        document.getElementById('imgHostType').value = imgHost.type;
+        document.getElementById('imgHostUrl').value = imgHost.url;
+        document.getElementById('imgHostToken').value = imgHost.token || '';
                 
-                if (imgHost.copyFormat === 'markdown') {
-                    document.getElementById('copyFormatMarkdown').checked = true;
-                } else {
-                    document.getElementById('copyFormatUrl').checked = true;
-                }
-            } catch (e) {
-                showNotification('加载设置失败', 'error');
-            }
+        if (imgHost.copyFormat === 'markdown') {
+            document.getElementById('copyFormatMarkdown').checked = true;
+        } else {
+            document.getElementById('copyFormatUrl').checked = true;
         }
+        
+    } else {
+
+        // 也可以在这里设置默认值到UI
+        document.getElementById('imgHostType').value = imgHost.type;
+        document.getElementById('imgHostUrl').value = imgHost.url;
+        document.getElementById('imgHostToken').value = '';
+        
+        if (imgHost.copyFormat === 'markdown') {
+            document.getElementById('copyFormatMarkdown').checked = true;
+        } else {
+            document.getElementById('copyFormatUrl').checked = true;
+        }
+    }
 }
 
 /**
