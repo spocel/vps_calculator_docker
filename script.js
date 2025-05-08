@@ -97,7 +97,6 @@ function initializeDatePickers() {
         dateFormat: "Y-m-d",
         locale: "zh",
         placeholder: "选择交易日期",
-        minDate: "today",
         onChange: validateDates
     });
 }
@@ -116,12 +115,6 @@ function validateDates() {
     expiryDate.setHours(0, 0, 0, 0);
     transactionDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-
-    if (transactionDate < today) {
-        showNotification('交易日期不能早于今天', 'error');
-        setDefaultTransactionDate();
-        return;
-    }
 
     if (expiryDate <= today) {
         showNotification('到期日期必须晚于今天', 'error');
@@ -275,6 +268,10 @@ function calculateAndSend() {
 
         updateResults(result, data);
         showNotification('计算完成！', 'success');
+        
+        if (parseFloat(remainingValue) >= 1000) {
+            triggerConfetti();
+        }
     } else {
         showNotification('请填写所有字段并确保输入有效', 'error');
     }
@@ -299,6 +296,12 @@ function updateResults(result, data) {
     resultValueElement.innerHTML = '';
     resultValueElement.appendChild(document.createTextNode(`${result.remainingValue} 元 `));
     resultValueElement.appendChild(copyIcon);
+    
+    if (parseFloat(result.remainingValue) >= 1000) {
+        resultValueElement.classList.add('high-value-result');
+    } else {
+        resultValueElement.classList.remove('high-value-result');
+    }
     
     resultValueElement.style.cursor = 'pointer';
     
@@ -698,4 +701,25 @@ function togglePasswordVisibility() {
         passwordInput.type = 'password';
         toggleBtn.className = 'fas fa-eye';
     }
+}
+
+
+function triggerConfetti() {
+    confetti({
+        particleCount: 15,
+        angle: 60,
+        spread: 40,
+        origin: { x: 0 },
+        colors: ['#FFD700'],
+        zIndex: 2000
+    });
+    
+    confetti({
+        particleCount: 15,
+        angle: 120,
+        spread: 40,
+        origin: { x: 1 },
+        colors: ['#FFD700'],
+        zIndex: 2000
+    });  
 }
