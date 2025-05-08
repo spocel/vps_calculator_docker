@@ -1,3 +1,19 @@
+const APP_VERSION = window.APP_VERSION;
+
+// 检查版本并清除缓存
+(function() {
+    const storedVersion = localStorage.getItem('app_version');
+    if (storedVersion !== APP_VERSION) {
+        console.log('检测到新版本，清除缓存...');
+        const theme = localStorage.getItem('theme');
+        const imgHostSettings = localStorage.getItem('imgHostSettings');
+        localStorage.clear();
+        if (theme) localStorage.setItem('theme', theme);
+        if (imgHostSettings) localStorage.setItem('imgHostSettings', imgHostSettings);
+        localStorage.setItem('app_version', APP_VERSION);
+    }
+})();
+
 const imgHost = {
     type: "LskyPro", // 图床类型, 仅支持 LskyPro / EasyImages
     url: "https://image.dooo.ng", // 图床地址, 带上协议头
@@ -238,7 +254,7 @@ function calculateAndSend() {
     const bidAmount = 0;
 
     if (customRate && amount && cycle != 0 && expiryDate && transactionDate && !isNaN(bidAmount)) {
-        const localAmount = (amount * customRate).toFixed(2);
+        const localAmount = amount * customRate;
         const remainingDays = calculateRemainingDays(expiryDate, transactionDate);
         
         // 计算年化价格
@@ -249,7 +265,6 @@ function calculateAndSend() {
         
         // 计算剩余价值
         const remainingValue = (dailyValue * remainingDays).toFixed(2);
-        
 
         const result = {
             remainingValue
@@ -282,8 +297,9 @@ function updateResults(result, data) {
     document.getElementById('resultForeignRate').innerText = data.customRate.toFixed(3);
     
     // 计算年化价格
-    const annualPrice = (data.price * (12 / data.cycle)).toFixed(2);
-    document.getElementById('resultPrice').innerText = `${annualPrice} 人民币/年`;
+    const price = parseFloat(data.price);
+    const cycleText = getCycleText(data.cycle);
+    document.getElementById('resultPrice').innerText = `${price.toFixed(2)} 人民币/${cycleText}`;
     
     document.getElementById('resultDays').innerText = data.time;
     document.getElementById('resultExpiry').innerText = data.expiryDate;
@@ -722,4 +738,18 @@ function triggerConfetti() {
         colors: ['#FFD700'],
         zIndex: 2000
     });  
+}
+
+function getCycleText(cycle) {
+    switch(parseInt(cycle)) {
+        case 1: return '月';
+        case 3: return '季度';
+        case 6: return '半年';
+        case 12: return '年';
+        case 24: return '两年';
+        case 36: return '三年';
+        case 48: return '四年';
+        case 60: return '五年';
+        default: return '未知周期';
+    }
 }
