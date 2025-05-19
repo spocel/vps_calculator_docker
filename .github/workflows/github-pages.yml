@@ -33,18 +33,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
         
-      # 构建步骤（如果需要）
-      - name: Build
-        run: |
-          echo "Build step completed"
-          # 如果需要构建步骤（如使用构建工具），可以在这里添加命令
-          # 例如 npm install && npm run build
-          
-      # 上传构建结果
+      # 注意：移除了任何可能依赖 actions/upload-artifact@v3 的步骤
+        
+      # 上传构建结果 - 使用 v1 替代 v2，避免潜在依赖问题
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v1
         with:
-          # 上传整个仓库（如果你有构建步骤，应改为构建输出目录）
+          # 上传整个仓库
           path: '.'
           
       # 部署到 GitHub Pages
