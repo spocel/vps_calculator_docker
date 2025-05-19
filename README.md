@@ -4,7 +4,7 @@
 
 演示地址：[点我](https://jsq.666831.xyz/)
 
-![image](https://i.111666.best/image/9vjCwwUD647fHiIwtBl7WG.png)
+![1747670394393.png](https://image.dooo.ng/c/2025/05/19/682b557c1843c.webp)
 
 ## 功能特点
 
