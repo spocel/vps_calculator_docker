@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+on:
+  # 在推送到 main 分支时触发部署
+  push:
+    branches: [ main ]
+  # 允许手动触发部署
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 的权限，以便自动部署到 GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只允许一个部署任务
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # 构建和部署工作
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      # 设置 GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+        
+      # 构建步骤（如果需要）
+      - name: Build
+        run: |
+          echo "Build step completed"
+          # 如果需要构建步骤（如使用构建工具），可以在这里添加命令
+          # 例如 npm install && npm run build
+          
+      # 上传构建结果
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          # 上传整个仓库（如果你有构建步骤，应改为构建输出目录）
+          path: '.'
+          
+      # 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+        
+      # 部署完成通知
+      - name: Deployment successful
+        run: |
+          echo "🚀 Site successfully deployed to ${{ steps.deployment.outputs.page_url }}"
+          echo "Visit the URL above to view your site"
