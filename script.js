@@ -1,4 +1,3 @@
-const APP_VERSION = window.APP_VERSION;
 
 // 检查版本并清除缓存
 (function() {
@@ -180,7 +179,7 @@ function updateRemainingDays() {
  */
 function fetchExchangeRate() {
   const currency = document.getElementById('currency').value;
-  fetch(`https://er.aiuuo.com`)
+  fetch(`https://777100.xyz/`)
   .then(response => {
     if (!response.ok) {
       throw new Error(`HTTP error! 状态: ${response.status}`);
