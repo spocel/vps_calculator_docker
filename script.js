@@ -400,13 +400,43 @@ function captureAndUpload() {
     // 显示加载中通知
     showNotification('正在生成截图...', 'info');
     
-    // 使用 html2canvas 捕获结果区域
-    html2canvas(document.getElementById('calcResult'), {
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card-background-color'),
-        scale: 2, // 使用2倍缩放以获得更清晰的图像
+    // 临时隐藏不需要的元素
+    const themeToggle = document.querySelector('.theme-toggle');
+    const settingsToggle = document.querySelector('.settings-toggle');
+    const screenshotBtn = document.getElementById('screenshotBtn');
+    const footer = document.querySelector('footer');
+    
+    // 保存原始显示状态
+    const originalDisplay = {
+        theme: themeToggle.style.display,
+        settings: settingsToggle.style.display,
+        screenshot: screenshotBtn.style.display,
+        footer: footer.style.display
+    };
+    
+    // 隐藏这些元素
+    themeToggle.style.display = 'none';
+    settingsToggle.style.display = 'none';
+    screenshotBtn.style.display = 'none';
+    footer.style.display = 'none';
+    
+    // 使用 html2canvas 捕获整个容器
+    html2canvas(document.querySelector('.container'), {  // ← 改为截取整个container
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--background-color'),
+        scale: 2,
         logging: false,
-        useCORS: true
+        useCORS: true,
+        width: document.querySelector('.container').scrollWidth,
+        height: document.querySelector('.container').scrollHeight,
+        windowWidth: document.querySelector('.container').scrollWidth,
+        windowHeight: document.querySelector('.container').scrollHeight
     }).then(function(canvas) {
+        // 恢复原始显示状态
+        themeToggle.style.display = originalDisplay.theme;
+        settingsToggle.style.display = originalDisplay.settings;
+        screenshotBtn.style.display = originalDisplay.screenshot;
+        footer.style.display = originalDisplay.footer;
+        
         showNotification('截图生成成功，正在上传...', 'info');
         
         // 转换为 base64 数据 URL
@@ -415,10 +445,17 @@ function captureAndUpload() {
         // 上传到选定的图床
         uploadImage(imageData);
     }).catch(function(error) {
+        // 恢复原始显示状态
+        themeToggle.style.display = originalDisplay.theme;
+        settingsToggle.style.display = originalDisplay.settings;
+        screenshotBtn.style.display = originalDisplay.screenshot;
+        footer.style.display = originalDisplay.footer;
+        
         console.error('截图生成失败:', error);
         showNotification('截图生成失败，请重试', 'error');
     });
 }
+
 
 /**
  * 将图片上传到配置的图床
