@@ -10,6 +10,7 @@ WORKDIR /usr/share/nginx/html
 COPY index.html .
 COPY script.js .
 COPY styles.css .
+COPY version.js .
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf

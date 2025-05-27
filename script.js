@@ -421,7 +421,7 @@ function captureAndUpload() {
     footer.style.display = 'none';
     
     // 使用 html2canvas 捕获整个容器
-    html2canvas(document.querySelector('.container'), {  // ← 改为截取整个container
+    html2canvas(document.querySelector('.container'), {
         backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--background-color'),
         scale: 2,
         logging: false,
