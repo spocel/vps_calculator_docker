@@ -1,4 +1,4 @@
-const APP_VERSION = '3.2.4';
+const APP_VERSION = '4.0.0';
 
 if (typeof window !== 'undefined') {
     window.APP_VERSION = APP_VERSION;

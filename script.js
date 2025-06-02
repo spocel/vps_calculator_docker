@@ -1,5 +1,4 @@
 
-// 检查版本并清除缓存
 (function() {
     const storedVersion = localStorage.getItem('app_version');
     if (storedVersion !== APP_VERSION) {
@@ -32,25 +31,33 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchExchangeRate();
     setDefaultTransactionDate();
     
-    // 添加事件监听器
+    // 添加事件监听器 - 适配Material Web组件
     document.getElementById('currency').addEventListener('change', fetchExchangeRate);
     document.getElementById('calculateBtn').addEventListener('click', calculateAndSend);
     document.getElementById('screenshotBtn').addEventListener('click', captureAndUpload);
 
+    // 等待Material Web组件加载完成后添加事件监听器
+    setTimeout(() => {
+        const currencySelect = document.getElementById('currency');
+        if (currencySelect && currencySelect.addEventListener) {
+            currencySelect.addEventListener('change', fetchExchangeRate);
+        }
+    }, 100);
+
     initSettings();
     
-    // 添加设置按钮事件监听
-    document.getElementById('settingsToggle').addEventListener('click', openSettingsModal);
-    document.querySelector('.close-btn').addEventListener('click', closeSettingsModal);
+    // 添加设置按钮事件监听 - 适配侧边栏
+    document.getElementById('settingsToggle').addEventListener('click', openSettingsSidebar);
+    document.getElementById('closeSidebar').addEventListener('click', closeSettingsSidebar);
+    document.getElementById('sidebarOverlay').addEventListener('click', closeSettingsSidebar);
     document.getElementById('saveSettings').addEventListener('click', saveSettings);
     document.getElementById('resetSettings').addEventListener('click', resetSettings);
     document.querySelector('.toggle-password').addEventListener('click', togglePasswordVisibility);
-    
-    // 点击模态框外部关闭
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('settingsModal');
-        if (event.target === modal) {
-            closeSettingsModal();
+
+    // ESC键关闭侧边栏
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeSettingsSidebar();
         }
     });
 });
@@ -58,38 +65,44 @@ document.addEventListener('DOMContentLoaded', function() {
 // 主题切换功能
 function initTheme() {
     const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = themeToggle.querySelector('i');
     const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     // 检查本地存储中的主题设置
     const currentTheme = localStorage.getItem('theme');
-    
+
     // 应用保存的主题或系统主题
     if (currentTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        themeIcon.className = 'fas fa-sun';
     } else if (currentTheme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        themeIcon.className = 'fas fa-moon';
     } else if (prefersDarkScheme.matches) {
         // 如果没有保存的主题但系统偏好暗色模式
         document.documentElement.setAttribute('data-theme', 'dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        themeIcon.className = 'fas fa-sun';
         localStorage.setItem('theme', 'dark');
+    } else {
+        // 默认使用亮色主题
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeIcon.className = 'fas fa-moon';
+        localStorage.setItem('theme', 'light');
     }
-    
+
     // 切换主题
     themeToggle.addEventListener('click', function() {
         let theme;
         if (document.documentElement.getAttribute('data-theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'light');
             theme = 'light';
-            this.innerHTML = '<i class="fas fa-moon"></i>';
+            themeIcon.className = 'fas fa-moon';
         } else {
             document.documentElement.setAttribute('data-theme', 'dark');
             theme = 'dark';
-            this.innerHTML = '<i class="fas fa-sun"></i>';
+            themeIcon.className = 'fas fa-sun';
         }
-        
+
         // 保存主题设置到本地存储
         localStorage.setItem('theme', theme);
     });
@@ -101,7 +114,7 @@ function initializeDatePickers() {
         locale: "zh",
         placeholder: "选择到期日期",
         minDate: "today",
-        onChange: function(selectedDates, dateStr) {
+        onChange: function(_selectedDates, dateStr) {
             const transactionPicker = document.getElementById('transactionDate')._flatpickr;
             transactionPicker.set('maxDate', dateStr);
             validateDates();
@@ -204,7 +217,9 @@ function fetchExchangeRate() {
     
     document.getElementById('exchangeRate').value = rate.toFixed(3);
     document.getElementById('customRate').value = rate.toFixed(3);
-    document.getElementById('updateDate').innerText = `更新时间: ${formattedDate}`;
+    // 更新Material Web组件的supporting-text
+    const exchangeRateField = document.getElementById('exchangeRate');
+    exchangeRateField.setAttribute('supporting-text', `更新时间: ${formattedDate}`);
   })
   .catch(error => {
     console.error('Error fetching the exchange rate:', error);
@@ -307,7 +322,7 @@ function updateResults(result, data) {
     let copyIcon = document.createElement('i');
     copyIcon.className = 'fas fa-copy copy-icon';
     copyIcon.title = '复制到剪贴板';
-    
+
     resultValueElement.innerHTML = '';
     resultValueElement.appendChild(document.createTextNode(`${result.remainingValue} 元 `));
     resultValueElement.appendChild(copyIcon);
@@ -333,19 +348,37 @@ function updateResults(result, data) {
 }
 
 function copyToClipboard(text) {
+    // 使用现代 Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('已复制到剪贴板！', 'success');
+        }).catch(() => {
+            // 回退到传统方法
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        // 回退到传统方法
+        fallbackCopyToClipboard(text);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
     const textarea = document.createElement('textarea');
     textarea.value = text;
     textarea.setAttribute('readonly', '');
     textarea.style.position = 'absolute';
     textarea.style.left = '-9999px';
     document.body.appendChild(textarea);
-    
+
     textarea.select();
-    document.execCommand('copy');
-    
+    try {
+        document.execCommand('copy');
+        showNotification('已复制到剪贴板！', 'success');
+    } catch (err) {
+        showNotification('复制失败，请手动复制', 'error');
+    }
+
     document.body.removeChild(textarea);
-    
-    showNotification('已复制到剪贴板！', 'success');
 }
 
 function showNotification(message, type) {
@@ -568,23 +601,6 @@ function uploadToEasyImages(file) {
     });
 }
 
-/**
- * 复制文本到剪贴板
- * @param {string} text - 要复制的文本
- */
-function copyToClipboard(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'absolute';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    
-    textarea.select();
-    document.execCommand('copy');
-    
-    document.body.removeChild(textarea);
-}
 
 
 
@@ -606,7 +622,7 @@ function initSettings() {
         document.getElementById('imgHostType').value = imgHost.type;
         document.getElementById('imgHostUrl').value = imgHost.url;
         document.getElementById('imgHostToken').value = imgHost.token || '';
-                
+
         if (imgHost.copyFormat === 'markdown') {
             document.getElementById('copyFormatMarkdown').checked = true;
         } else {
@@ -629,29 +645,51 @@ function initSettings() {
 }
 
 /**
- * 打开设置模态框
+ * 打开设置侧边栏
  */
-function openSettingsModal() {
-    const modal = document.getElementById('settingsModal');
-    modal.classList.add('show');
+function openSettingsSidebar() {
+    const sidebar = document.getElementById('settingsSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+
+    // 防止背景滚动
+    document.body.style.overflow = 'hidden';
 }
 
 /**
- * 关闭设置模态框
+ * 关闭设置侧边栏
  */
-function closeSettingsModal() {
-    const modal = document.getElementById('settingsModal');
-    modal.classList.remove('show');
+function closeSettingsSidebar() {
+    const sidebar = document.getElementById('settingsSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+
+    // 恢复背景滚动
+    document.body.style.overflow = '';
 }
 
 /**
- * 保存设置
+ * 保存设置 - 适配Material Web组件
  */
 function saveSettings() {
     const type = document.getElementById('imgHostType').value;
     const url = document.getElementById('imgHostUrl').value;
     const token = document.getElementById('imgHostToken').value;
-    const copyFormat = document.querySelector('input[name="copyFormat"]:checked').value;
+
+    // 获取选中的复制格式 - 适配Material Web md-radio组件
+    let copyFormat = 'markdown';
+    const markdownRadio = document.getElementById('copyFormatMarkdown');
+    const urlRadio = document.getElementById('copyFormatUrl');
+
+    if (markdownRadio && markdownRadio.checked) {
+        copyFormat = 'markdown';
+    } else if (urlRadio && urlRadio.checked) {
+        copyFormat = 'url';
+    }
     
     if (!url) {
         showNotification('图床地址不能为空', 'error');
@@ -673,7 +711,7 @@ function saveSettings() {
     try {
         localStorage.setItem('imgHostSettings', JSON.stringify(imgHost));
         showNotification('设置已保存', 'success');
-        closeSettingsModal();
+        closeSettingsSidebar();
     } catch (error) {
         showNotification('设置保存失败，可能是浏览器限制', 'error');
     }
@@ -682,7 +720,7 @@ function saveSettings() {
 
 function resetSettings() {
     if (confirm('确定要恢复默认设置吗？')) {
-        // 使用对象属性更新而不是重新赋值
+        // 使用对象属性更新
         imgHost.type = "LskyPro";
         imgHost.url = "https://image.dooo.ng";
         imgHost.token = "";
@@ -708,7 +746,7 @@ function resetSettings() {
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('imgHostToken');
     const toggleBtn = document.querySelector('.toggle-password i');
-    
+
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         toggleBtn.className = 'fas fa-eye-slash';
