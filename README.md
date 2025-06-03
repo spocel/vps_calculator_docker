@@ -1,51 +1,79 @@
-# 剩余价值计算器 v3
+# 剩余价值计算器 V4
 
-剩余价值计算器是一个网页应用程序，旨在帮助用户计算主机、域名或其他周期性服务的剩余价值。它考虑了多种因素，如续费金额、汇率、续费周期和剩余天数，为用户提供准确的剩余价值估算，方便用户进行二手交易。
+> 一个基于 Material Design 3 的现代化剩余价值计算器，帮助用户精确计算主机、域名等周期性服务的剩余价值。
 
-演示地址：[暂时关闭](https://) |
-备用地址: [cf page](https://vps-calculator-docker.pages.dev/)
+## 🚀 在线体验
 
-![1747670394393.png](https://image.dooo.ng/c/2025/05/19/682b557c1843c.webp)
+| 演示地址 | 状态 |
+|---------|------|
+| [主站点](https://) | 暂时关闭 |
+| [Cloudflare Pages](https://vps-calculator-docker.pages.dev/) | ✅ 可用 |
 
-## 功能特点
+## 📱 界面预览
 
-- 支持多种货币的汇率转换
-- 获取最新汇率数据
-- 灵活的续费周期选择（月付到五年付）
-- 精确的日期选择和验证
-- 自动计算剩余天数
-- 清晰直观的结果展示
-- 响应式设计，适配各种设备
+<details>
+<summary>点击查看界面截图</summary>
 
+### 亮色模式
+<img src="https://image.dooo.ng/c/2025/06/03/683e3caf62776.webp" alt="亮色模式界面">
 
-## 较原版改进
-
-- 改为Docker容器化部署方式
-- 优化用户界面，提升交互体验
-- 修改汇率更新机制为实时获取
-- 增加一键截图上传复制功能，支持自定义图床链接
-- 新增暗色模式/亮色模式切换功能
+### 暗色模式
+<img src="https://image.dooo.ng/c/2025/06/03/683e395b405e7.webp" alt="亮色模式界面">
 
 
-## 部署
-### docker一键部署
-```
+</details>
+
+## ✨ 核心功能
+
+| 功能 | 描述 |
+|------|------|
+| 💱 **多币种支持** | 支持 USD、EUR、CNY 等 11 种主流货币 |
+| 🔄 **实时汇率** | 自动获取最新汇率数据 |
+| 📅 **灵活周期** | 月付到五年付 |
+| 🎯 **精准计算** | 自动计算剩余天数和价值 |
+| 🎨 **全新界面** | 采用 Material Design 3 设计语言
+| 🐳 **容器化部署** | 支持 Docker 一键部署
+| 📷 **截图功能** | 一键截图并上传到图床
+| 🌓 **主题模式** | 支持亮色/暗色模式切换
+
+
+
+## 🚀 快速部署
+
+### 🐳 Docker 部署
+
+```bash
 docker run -d --name=jsq -p 8089:80 bobby567/calculator:latest
 ```
 
-### Cloudflare Page / Github Page
-自行部署
 
-## 开发信息
+### ☁️ 其他方式部署
 
-本项目Fork自：https://github.com/Tomzhao1016/vps_surplus_value
-最后更新：2024年10月
+| 平台 | 部署方式 |
+|------|----------|
+| **Cloudflare Pages** | Fork 本仓库，连接到 Cloudflare Pages |
+| **GitHub Pages** | 启用 GitHub Pages，选择 main 分支 |
+| **Vercel** | 导入项目，自动部署 |
+| **Netlify** | 拖拽文件夹或连接 Git 仓库 |
 
-## 许可协议
-本项目遵循原项目的许可协议。
 
-## 致谢
-- [pengzhile](https://linux.do/t/topic/227730/26) - 提供实时汇率代码
-- [Dooongの公益图床](https://www.nodeseek.com/post-43196-1) - 提供公益图床
-- [NodeSeek 编辑器增强脚本](https://www.nodeseek.com/post-74493-1) - 提供图床上传代码参考
-- mjj - 提供鸡腿
+## 🔗 相关链接
+
+| 项目 | 链接 |
+|------|------|
+| 🏠 **本项目** | [GitHub](https://github.com/realnovicedev/vps_calculator_docker) |
+| 🌱 **原项目** | [vps_surplus_value](https://github.com/Tomzhao1016/vps_surplus_value) |
+| 📖 **Material Web** | [官方文档](https://material-web.dev/) |
+
+## 🙏 致谢
+
+感谢以下项目和个人的贡献：
+
+- [pengzhile](https://linux.do/t/topic/227730/26) - 实时汇率 API 代码
+- [Dooongの公益图床](https://www.nodeseek.com/post-43196-1) - 提供图床服务
+- [NodeSeek 编辑器增强脚本](https://www.nodeseek.com/post-74493-1) - 图床上传代码参考
+- mjj - 大鸡腿
+
+## 📄 许可协议
+
+本项目遵循原项目的开源许可协议。
