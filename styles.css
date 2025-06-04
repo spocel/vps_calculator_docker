@@ -1,111 +1,114 @@
 :root {
-    --md-sys-color-primary: #6750a4;
-    --md-sys-color-on-primary: #ffffff;
-    --md-sys-color-primary-container: #eaddff;
-    --md-sys-color-on-primary-container: #21005d;
+  --md-sys-color-primary:            #333446;
+  --md-sys-color-on-primary:         #FFFFFF;
+  --md-sys-color-primary-container:  #B8CFCE;
+  --md-sys-color-on-primary-container:#00131A;
 
-    --md-sys-color-secondary: #625b71;
-    --md-sys-color-on-secondary: #ffffff;
-    --md-sys-color-secondary-container: #e8def8;
-    --md-sys-color-on-secondary-container: #1d192b;
+  --md-sys-color-secondary:          #7F8CAA;
+  --md-sys-color-on-secondary:       #FFFFFF;
+  --md-sys-color-secondary-container:#D3D8E8;
+  --md-sys-color-on-secondary-container:#10131E;
 
-    --md-sys-color-surface: #fffbfe;
-    --md-sys-color-on-surface: #1c1b1f;
-    --md-sys-color-surface-variant: #e7e0ec;
-    --md-sys-color-on-surface-variant: #49454f;
-    --md-sys-color-surface-container: #f3edf7;
-    --md-sys-color-surface-container-high: #ece6f0;
-    --md-sys-color-surface-container-highest: #e6e0e9;
+  --md-sys-color-tertiary:           #B8CFCE;
+  --md-sys-color-on-tertiary:        #002021;
 
-    --md-sys-color-background: #fffbfe;
-    --md-sys-color-on-background: #1c1b1f;
+  --md-sys-color-surface:            #FFFFFF;
+  --md-sys-color-on-surface:         #333446;
+  --md-sys-color-surface-variant:    #E0E4E4;
+  --md-sys-color-on-surface-variant: #505462;
+  --md-sys-color-surface-container:       #EAEFEF;
+  --md-sys-color-surface-container-high:  #F4F7F7;
+  --md-sys-color-surface-container-highest:#FFFFFF;
 
-    --md-sys-color-error: #ba1a1a;
-    --md-sys-color-on-error: #ffffff;
-    --md-sys-color-error-container: #ffdad6;
-    --md-sys-color-on-error-container: #410002;
+  --md-sys-color-background:         #EAEFEF;
+  --md-sys-color-on-background:      #333446;
 
-    --md-sys-color-success: #006e1c;
-    --md-sys-color-on-success: #ffffff;
-    --md-sys-color-success-container: #97f68d;
-    --md-sys-color-on-success-container: #002204;
+  --md-sys-color-error:              #BA1A1A;
+  --md-sys-color-on-error:           #FFFFFF;
+  --md-sys-color-error-container:    #FFDAD6;
+  --md-sys-color-on-error-container: #410002;
 
-    --md-sys-color-outline: #79747e;
-    --md-sys-color-outline-variant: #cac4d0;
+  --md-sys-color-success:            #4CAF50;
+  --md-sys-color-on-success:         #FFFFFF;
+  --md-sys-color-success-container:  #C8E6C9;
+  --md-sys-color-on-success-container:#00390A;
 
-    --md-sys-color-shadow: #000000;
+  --md-sys-color-outline:            #8C909E;
+  --md-sys-color-outline-variant:    #CCD0D8;
+  --md-sys-color-shadow:             #000000;
 
-    --primary-color: var(--md-sys-color-primary);
-    --secondary-color: var(--md-sys-color-secondary);
-    --background-color: var(--md-sys-color-background);
-    --card-background-color: var(--md-sys-color-surface-container);
-    --text-color: var(--md-sys-color-on-surface);
-    --border-color: var(--md-sys-color-outline-variant);
-    --hover-color: var(--md-sys-color-surface-container-high);
-    --result-color: var(--md-sys-color-success);
-    --error-color: var(--md-sys-color-error);
-    --input-background: var(--md-sys-color-surface-variant);
-    --shadow-color: rgba(0, 0, 0, 0.1);
-    --shadow-hover-color: rgba(0, 0, 0, 0.15);
-    --footer-color: var(--md-sys-color-on-surface-variant);
-    --success-text: var(--md-sys-color-on-success);
-    --error-text: var(--md-sys-color-on-error);
+  --primary-color:     var(--md-sys-color-primary);
+  --secondary-color:   var(--md-sys-color-secondary);
+  --background-color:  var(--md-sys-color-background);
+  --card-background-color: var(--md-sys-color-surface-container);
+  --text-color:        var(--md-sys-color-on-surface);
+  --border-color:      var(--md-sys-color-outline-variant);
+  --hover-color:       var(--md-sys-color-surface-container-high);
+  --result-color:      var(--md-sys-color-success);
+  --error-color:       var(--md-sys-color-error);
+  --input-background:  var(--md-sys-color-surface-variant);
+  --shadow-color:      rgba(0,0,0,.08);
+  --shadow-hover-color:rgba(0,0,0,.12);
+  --footer-color:      var(--md-sys-color-on-surface-variant);
+  --success-text:      var(--md-sys-color-on-success);
+  --error-text:        var(--md-sys-color-on-error);
 }
 
 [data-theme="dark"] {
-    --md-sys-color-primary: #d0bcff;
-    --md-sys-color-on-primary: #381e72;
-    --md-sys-color-primary-container: #4f378b;
-    --md-sys-color-on-primary-container: #eaddff;
+  --md-sys-color-primary:            #B8CFCE;
+  --md-sys-color-on-primary:         #002021;
+  --md-sys-color-primary-container:  #4A5B63;
+  --md-sys-color-on-primary-container:#D8EAE9;
 
-    --md-sys-color-secondary: #ccc2dc;
-    --md-sys-color-on-secondary: #332d41;
-    --md-sys-color-secondary-container: #4a4458;
-    --md-sys-color-on-secondary-container: #e8def8;
+  --md-sys-color-secondary:          #9BA7C4;
+  --md-sys-color-on-secondary:       #0F1421;
+  --md-sys-color-secondary-container:#424D68;
+  --md-sys-color-on-secondary-container:#DEE3F3;
 
-    --md-sys-color-surface: #10131c;
-    --md-sys-color-on-surface: #e6e1e5;
-    --md-sys-color-surface-variant: #49454f;
-    --md-sys-color-on-surface-variant: #cac4d0;
-    --md-sys-color-surface-container: #1d1b20;
-    --md-sys-color-surface-container-high: #272529;
-    --md-sys-color-surface-container-highest: #322f35;
+  --md-sys-color-tertiary:           #7F8CAA;
+  --md-sys-color-on-tertiary:        #00131E;
 
-    --md-sys-color-background: #10131c;
-    --md-sys-color-on-background: #e6e1e5;
+  --md-sys-color-surface:            #12131A;
+  --md-sys-color-on-surface:         #E3E6EF;
+  --md-sys-color-surface-variant:    #505462;
+  --md-sys-color-on-surface-variant: #CACDD9;
+  --md-sys-color-surface-container:       #1F2028;
+  --md-sys-color-surface-container-high:  #292B33;
+  --md-sys-color-surface-container-highest:#33353E;
 
-    --md-sys-color-error: #ffb4ab;
-    --md-sys-color-on-error: #690005;
-    --md-sys-color-error-container: #93000a;
-    --md-sys-color-on-error-container: #ffdad6;
+  --md-sys-color-background:         #12131A;
+  --md-sys-color-on-background:      #E3E6EF;
 
-    --md-sys-color-success: #7bda71;
-    --md-sys-color-on-success: #00390a;
-    --md-sys-color-success-container: #005313;
-    --md-sys-color-on-success-container: #97f68d;
+  --md-sys-color-error:              #FFB4AB;
+  --md-sys-color-on-error:           #690005;
+  --md-sys-color-error-container:    #93000A;
+  --md-sys-color-on-error-container: #FFDAD6;
 
-    --md-sys-color-outline: #938f99;
-    --md-sys-color-outline-variant: #49454f;
+  --md-sys-color-success:            #7BDA71;
+  --md-sys-color-on-success:         #00390A;
+  --md-sys-color-success-container:  #005313;
+  --md-sys-color-on-success-container:#97F68D;
 
-    --md-sys-color-shadow: #000000;
+  --md-sys-color-outline:            #9599A8;
+  --md-sys-color-outline-variant:    #505462;
+  --md-sys-color-shadow:             #000000;
 
-    --primary-color: var(--md-sys-color-primary);
-    --secondary-color: var(--md-sys-color-secondary);
-    --background-color: var(--md-sys-color-background);
-    --card-background-color: var(--md-sys-color-surface-container);
-    --text-color: var(--md-sys-color-on-surface);
-    --border-color: var(--md-sys-color-outline-variant);
-    --hover-color: var(--md-sys-color-surface-container-high);
-    --result-color: var(--md-sys-color-success);
-    --error-color: var(--md-sys-color-error);
-    --input-background: var(--md-sys-color-surface-variant);
-    --shadow-color: rgba(0, 0, 0, 0.3);
-    --shadow-hover-color: rgba(0, 0, 0, 0.4);
-    --footer-color: var(--md-sys-color-on-surface-variant);
-    --success-text: var(--md-sys-color-on-success);
-    --error-text: var(--md-sys-color-on-error);
+  --primary-color:     var(--md-sys-color-primary);
+  --secondary-color:   var(--md-sys-color-secondary);
+  --background-color:  var(--md-sys-color-background);
+  --card-background-color: var(--md-sys-color-surface-container);
+  --text-color:        var(--md-sys-color-on-surface);
+  --border-color:      var(--md-sys-color-outline-variant);
+  --hover-color:       var(--md-sys-color-surface-container-high);
+  --result-color:      var(--md-sys-color-success);
+  --error-color:       var(--md-sys-color-error);
+  --input-background:  var(--md-sys-color-surface-variant);
+  --shadow-color:      rgba(0,0,0,.30);
+  --shadow-hover-color:rgba(0,0,0,.40);
+  --footer-color:      var(--md-sys-color-on-surface-variant);
+  --success-text:      var(--md-sys-color-on-success);
+  --error-text:        var(--md-sys-color-on-error);
 }
-
 
 .md-elevation--1 {
     box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
