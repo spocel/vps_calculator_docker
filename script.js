@@ -271,13 +271,14 @@ function calculateAndSend() {
         const localAmount = amount * customRate;
         const remainingDays = calculateRemainingDays(expiryDate, transactionDate);
         
-        const tradeDate = new Date(transactionDate);
-        const expiry = new Date(expiryDate);
-        const totalServiceDays = Math.floor((expiry - tradeDate) / (1000 * 60 * 60 * 24));
-        
-        const remainingValue = (localAmount * remainingDays / totalServiceDays).toFixed(2);
-
+        // 计算年化价格
         const annualPrice = localAmount * (12 / cycle);
+        
+        // 计算每天的价值
+        const dailyValue = annualPrice / 365;
+        
+        // 计算剩余价值
+        const remainingValue = (dailyValue * remainingDays).toFixed(2);
 
         const result = {
             remainingValue
@@ -291,9 +292,7 @@ function calculateAndSend() {
             cycle,
             expiryDate,
             transactionDate,
-            bidAmount,
-            totalServiceDays: totalServiceDays,
-            usageRatio: (remainingDays / totalServiceDays).toFixed(3)
+            bidAmount
         };
 
         updateResults(result, data);
