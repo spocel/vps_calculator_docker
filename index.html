@@ -1,13 +1,115 @@
 <!DOCTYPE html>
-<html lang="zh" data-theme="light">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>剩余价值计算器</title>
     <script src="./version.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    
+    <!-- 渐入 防止FOUC -->
+    <style>
+        :root {
+            --md-sys-color-primary: #6750a4;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #eaddff;
+            --md-sys-color-on-primary-container: #21005d;
+            --md-sys-color-secondary: #625b71;
+            --md-sys-color-surface: #fffbfe;
+            --md-sys-color-on-surface: #1c1b1f;
+            --md-sys-color-surface-container: #f3edf7;
+            --md-sys-color-background: #fffbfe;
+            --md-sys-color-on-background: #1c1b1f;
+        }
+
+        [data-theme="dark"] {
+            --md-sys-color-primary: #d0bcff;
+            --md-sys-color-on-primary: #381e72;
+            --md-sys-color-primary-container: #4f378b;
+            --md-sys-color-on-primary-container: #eaddff;
+            --md-sys-color-secondary: #ccc2dc;
+            --md-sys-color-surface: #10131c;
+            --md-sys-color-on-surface: #e6e1e5;
+            --md-sys-color-surface-container: #1d1b20;
+            --md-sys-color-background: #10131c;
+            --md-sys-color-on-background: #e6e1e5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html {
+            background-color: var(--md-sys-color-background);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 0.2s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: slideIn 0.6s ease 0.3s forwards;
+        }
+
+        @keyframes slideIn {
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        md-outlined-text-field,
+        md-outlined-select,
+        md-filled-button,
+        md-text-button,
+        md-icon-button,
+        md-card,
+        md-chip,
+        md-radio {
+            opacity: 0;
+            animation: componentFadeIn 0.4s ease 0.6s forwards;
+        }
+
+        @keyframes componentFadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+
+    <script>
+        (function() {
+            // 应用主题
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 
     <script type="importmap">
       {
@@ -22,6 +124,7 @@
       document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
     </script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
