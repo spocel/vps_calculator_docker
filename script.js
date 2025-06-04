@@ -259,51 +259,59 @@ function calculateRemainingDays(expiryDate, transactionDate) {
     return daysDiff;
 }
 
+function getCycleStartDate(expiryDateStr, cycleMonths) {
+  const end   = new Date(expiryDateStr);
+  const start = new Date(end);
+  start.setMonth(start.getMonth() - cycleMonths);
+
+  if (start.getDate() !== end.getDate()) {
+    start.setDate(0);
+  }
+  return start;
+}
+
 function calculateAndSend() {
-    const customRate = parseFloat(document.getElementById('customRate').value);
-    const amount = parseFloat(document.getElementById('amount').value);
-    const cycle = parseInt(document.getElementById('cycle').value);
-    const expiryDate = document.getElementById('expiryDate').value;
-    const transactionDate = document.getElementById('transactionDate').value;
-    const bidAmount = 0;
+  const customRate      = parseFloat(document.getElementById('customRate').value);
+  const amount          = parseFloat(document.getElementById('amount').value);
+  const cycle           = parseInt(document.getElementById('cycle').value); // 1,3,6,12...
+  const expiryDate      = document.getElementById('expiryDate').value;     // yyyy-mm-dd
+  const transactionDate = document.getElementById('transactionDate').value;
 
-    if (customRate && amount && cycle != 0 && expiryDate && transactionDate && !isNaN(bidAmount)) {
-        const localAmount = amount * customRate;
-        const remainingDays = calculateRemainingDays(expiryDate, transactionDate);
-        
-        // 计算年化价格
-        const annualPrice = localAmount * (12 / cycle);
-        
-        // 计算每天的价值
-        const dailyValue = annualPrice / 365;
-        
-        // 计算剩余价值
-        const remainingValue = (dailyValue * remainingDays).toFixed(2);
+  if (!(customRate && amount && cycle && expiryDate && transactionDate)) {
+    showNotification('请填写所有字段并确保输入有效', 'error');
+    return;
+  }
 
-        const result = {
-            remainingValue
-        };
 
-        const data = {
-            price: localAmount,
-            time: remainingDays,
-            customRate,
-            amount,
-            cycle,
-            expiryDate,
-            transactionDate,
-            bidAmount
-        };
+  const localAmount = amount * customRate;
 
-        updateResults(result, data);
-        showNotification('计算完成！', 'success');
-        
-        if (parseFloat(remainingValue) >= 1000) {
-            triggerConfetti();
-        }
-    } else {
-        showNotification('请填写所有字段并确保输入有效', 'error');
-    }
+  // 整个计费周期的天数
+  const cycleStart       = getCycleStartDate(expiryDate, cycle);
+  const totalCycleDays   = calculateRemainingDays(expiryDate, cycleStart.toISOString().slice(0,10));
+
+  // 当前剩余天数
+  const remainingDays    = calculateRemainingDays(expiryDate, transactionDate);
+
+  // 真实日费 & 剩余价值
+  const dailyValue       = localAmount / totalCycleDays;
+  const remainingValue   = (dailyValue * remainingDays).toFixed(2);
+
+  const data = {
+    price: localAmount,
+    time:  remainingDays,
+    customRate,
+    amount,
+    cycle,
+    expiryDate,
+    transactionDate,
+    bidAmount: 0
+  };
+  updateResults({ remainingValue }, data);
+  showNotification('计算完成！', 'success');
+
+  if (parseFloat(remainingValue) >= 1000) {
+    triggerConfetti();
+  }
 }
 
 
