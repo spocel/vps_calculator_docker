@@ -15,10 +15,10 @@
 <summary>点击查看界面截图</summary>
 
 ### 亮色模式
-<img src="https://image.dooo.ng/c/2025/06/03/683e3caf62776.webp" alt="亮色模式界面">
+<img src="https://image.dooo.ng/c/2025/06/05/6840a1005714b.webp" alt="亮色模式界面">
 
 ### 暗色模式
-<img src="https://image.dooo.ng/c/2025/06/03/683e395b405e7.webp" alt="亮色模式界面">
+<img src="https://image.dooo.ng/c/2025/06/05/6840a10e4d331.webp" alt="亮色模式界面">
 
 
 </details>
