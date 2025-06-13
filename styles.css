@@ -1482,3 +1482,52 @@ md-icon-button {
     top: 1.5rem;
     right: 4.5rem;
 }
+
+/* 价格输入组样式 */
+.price-input-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.price-input-group md-outlined-text-field {
+    flex: 1;
+}
+
+.premium-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background-color: var(--md-sys-color-surface-container);
+    transition: background-color 0.3s ease;
+}
+
+.premium-mode-toggle:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.switch-label {
+    font-size: 0.875rem;
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
+}
+
+.switch-label:hover {
+    color: var(--md-sys-color-primary);
+}
+
+/* 溢价模式激活时的样式 */
+.price-input-group.premium-mode .premium-mode-toggle {
+    background-color: var(--md-sys-color-primary-container);
+}
+
+.price-input-group.premium-mode .switch-label {
+    color: var(--md-sys-color-on-primary-container);
+    font-weight: 500;
+}

@@ -221,4 +221,32 @@ Associated Protocol: RIPER-5 + Multidimensional + Agent Protocol
     *   Blockers: None
     *   Status: Pending Confirmation
 
+*   2024/12/19 15:30
+    *   Step: 移除实际价格外币输入功能，添加溢价模式切换
+    *   Modifications: 
+        - 修改index.html: 移除"实际价格(外币)"输入字段，在"实际价格(人民币)"旁边添加溢价模式切换开关
+        - 修改styles.css: 添加溢价模式切换开关的样式设计
+        - 修改script.js: 重构TrafficCalculator.processPriceInput方法，支持溢价模式计算
+        - 修改script.js: 更新TrafficCalculator.calculate方法，优化计算流程
+        - 修改script.js: 更新TrafficValidation.validateTrafficInputs方法，适应新的验证逻辑
+        - 修改script.js: 更新TrafficEventHandlers.calculateTrafficValue方法，添加溢价模式数据收集
+        - 修改script.js: 在initTrafficCalculator中添加溢价模式切换事件监听器
+    *   Change Summary: 移除外币价格输入功能，新增溢价模式切换，支持"剩余流量官方价值+溢价"的计算方式
+    *   Reason: 用户反馈交易一般不涉及外币，并希望支持VPS机型溢价的计算场景
+    *   Blockers: None
+    *   Status: Success with minor issues
+
+*   2024/12/19 15:45
+    *   Step: 修复溢价模式切换功能
+    *   Modifications: 
+        - 修改script.js: 修复Material Web组件属性更新方法，使用element.label和element.supportingText而不是setAttribute
+        - 添加调试日志确保事件正确触发
+        - 添加错误处理和元素存在性检查
+        - 修复Material Web switch组件的属性访问，使用selected而不是checked属性
+        - 修复calculateTrafficValue方法中的switch状态获取，确保溢价模式计算正确
+    *   Change Summary: 修复溢价模式切换时字段标签无法更新、switch状态获取undefined以及溢价模式计算错误的问题
+    *   Reason: Material Web组件需要使用正确的JavaScript属性：text field使用label/supportingText属性，switch使用selected属性
+    *   Blockers: None
+    *   Status: Pending Confirmation
+
 # Final Review (Populated by REVIEW mode) 

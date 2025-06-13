@@ -1,4 +1,3 @@
-
 (function() {
     const storedVersion = localStorage.getItem('app_version');
     if (storedVersion !== APP_VERSION) {
@@ -909,25 +908,27 @@ const TrafficCalculator = {
         return Math.max(0, totalTraffic - usedTraffic);
     },
     
-
-    
-    // 处理价格输入（优先人民币）
-    processPriceInput(actualPriceCNY, actualPriceForeign, exchangeRate) {
-        if (actualPriceCNY && actualPriceCNY > 0) {
+    // 处理价格输入（支持溢价模式）
+    processPriceInput(actualPriceCNY, isPremiumMode, premiumAmount, remainingTrafficOriginalValue) {
+        if (isPremiumMode && premiumAmount !== undefined && remainingTrafficOriginalValue !== undefined) {
+            // 溢价模式：实际价格 = 剩余流量官方价值 + 溢价
+            const finalPrice = remainingTrafficOriginalValue + premiumAmount;
+            return {
+                finalPrice: finalPrice,
+                currency: 'CNY',
+                source: 'premium',
+                premiumAmount: premiumAmount,
+                baseValue: remainingTrafficOriginalValue
+            };
+        } else if (actualPriceCNY && actualPriceCNY > 0) {
+            // 直接价格模式
             return {
                 finalPrice: actualPriceCNY,
                 currency: 'CNY',
                 source: 'direct'
             };
-        } else if (actualPriceForeign && actualPriceForeign > 0 && exchangeRate > 0) {
-            return {
-                finalPrice: actualPriceForeign * exchangeRate,
-                currency: 'CNY',
-                source: 'converted',
-                originalAmount: actualPriceForeign
-            };
         }
-        throw new Error('请输入有效的购买价格');
+        throw new Error('请输入有效的购买价格或溢价金额');
     },
     
     // 性价比评级
@@ -947,7 +948,8 @@ const TrafficCalculator = {
             billingCycle,
             originalPrice,
             actualPriceCNY,
-            actualPriceForeign,
+            isPremiumMode,
+            premiumAmount,
             exchangeRate,
             transactionDate,
             endDate
@@ -959,36 +961,43 @@ const TrafficCalculator = {
             const remainingTraffic = this.calculateRemainingTraffic(totalTraffic, usedTraffic);
             const usageRate = totalTraffic > 0 ? ((usedTraffic / totalTraffic) * 100).toFixed(1) : '0';
             
-            // 2. 价格处理 - 优先人民币
-            const actualPriceInfo = this.processPriceInput(actualPriceCNY, actualPriceForeign, exchangeRate);
-            const actualPriceInCNY = actualPriceInfo.finalPrice;
             const originalPriceInCNY = originalPrice * exchangeRate;
             
-            // 3. 单价计算（人民币/100GB）
+            // 2. 先计算官方流量单价和剩余流量官方价值
             // 官方流量单价 = (套餐原价 ÷ 计费周期月数) ÷ 月流量配额 × 100
             const monthlyOriginalPrice = originalPriceInCNY / billingCycle;
             const originalUnitPrice = monthlyTraffic > 0 ? (monthlyOriginalPrice / monthlyTraffic) * 100 : 0;
             
-            // 实际流量单价 = 实际价格 ÷ 剩余流量 × 100（购买剩余套餐的单价）
-            const actualUnitPrice = remainingTraffic > 0 ? (actualPriceInCNY / remainingTraffic) * 100 : 0;
-            
-            // 4. 价值与节省分析
             // 剩余流量官方价值 = 剩余流量 × 官方流量单价 ÷ 100
             const remainingTrafficOriginalValue = (remainingTraffic / 100) * originalUnitPrice;
             
+            // 3. 价格处理 - 支持溢价模式
+            const actualPriceInfo = this.processPriceInput(
+                actualPriceCNY, 
+                isPremiumMode, 
+                premiumAmount, 
+                remainingTrafficOriginalValue
+            );
+            const actualPriceInCNY = actualPriceInfo.finalPrice;
+            
+            // 4. 实际流量单价计算
+            // 实际流量单价 = 实际价格 ÷ 剩余流量 × 100（购买剩余套餐的单价）
+            const actualUnitPrice = remainingTraffic > 0 ? (actualPriceInCNY / remainingTraffic) * 100 : 0;
+            
+            // 5. 价值与节省分析
             // 总节省金额 = 剩余流量官方价值 - 实际价格（购买剩余套餐节省的钱）
             const totalSavedAmount = remainingTrafficOriginalValue - actualPriceInCNY;
             
             // 剩余流量节省金额（等同于总节省金额，因为买的就是剩余流量）
             const remainingSavedAmount = totalSavedAmount;
             
-            // 5. 性价比分析
+            // 6. 性价比分析
             // 折扣率 = 节省金额 ÷ 剩余流量官方价值 × 100
             const discountRate = remainingTrafficOriginalValue > 0 ? ((totalSavedAmount / remainingTrafficOriginalValue) * 100).toFixed(1) : '0';
             // 性价比 = 剩余流量官方价值 ÷ 实际价格
             const costEfficiencyRatio = actualPriceInCNY > 0 ? (remainingTrafficOriginalValue / actualPriceInCNY) : 0;
             
-            // 6. 计算剩余天数（简化版）
+            // 7. 计算剩余天数（简化版）
             const transaction = new Date(transactionDate);
             const end = new Date(endDate);
             const now = new Date();
@@ -1001,7 +1010,7 @@ const TrafficCalculator = {
             const totalDays = Math.ceil((end - transaction) / (1000 * 60 * 60 * 24));
             const remainingDays = Math.max(0, Math.ceil((end - now) / (1000 * 60 * 60 * 24)));
             
-            // 7. 性价比评级
+            // 8. 性价比评级
             const valueRating = this.getValueRating(costEfficiencyRatio);
             
             return {
@@ -1082,12 +1091,19 @@ const TrafficValidation = {
             errors.push('套餐原价必须大于0');
         }
         
-        // 验证至少有一个有效的实际价格
-        const hasValidCNYPrice = data.actualPriceCNY && data.actualPriceCNY > 0;
-        const hasValidForeignPrice = data.actualPriceForeign && data.actualPriceForeign > 0 && data.exchangeRate > 0;
-        
-        if (!hasValidCNYPrice && !hasValidForeignPrice) {
-            errors.push('请输入人民币价格或外币价格+汇率');
+        // 验证价格输入（支持溢价模式）
+        if (data.isPremiumMode) {
+            // 溢价模式：验证溢价金额
+            if (data.premiumAmount === undefined || data.premiumAmount === null) {
+                errors.push('溢价模式下请输入溢价金额');
+            } else if (data.premiumAmount < 0) {
+                errors.push('溢价金额不能为负数');
+            }
+        } else {
+            // 直接价格模式：验证人民币价格
+            if (!data.actualPriceCNY || data.actualPriceCNY <= 0) {
+                errors.push('请输入有效的实际价格');
+            }
         }
         
         // 计费周期验证
@@ -1107,24 +1123,6 @@ const TrafficValidation = {
         
         if (!data.endDate) {
             errors.push('请选择到期时间');
-        }
-        
-        if (data.transactionDate && data.endDate) {
-            const transactionDate = new Date(data.transactionDate);
-            const endDate = new Date(data.endDate);
-            const today = new Date();
-            
-            today.setHours(0, 0, 0, 0);
-            endDate.setHours(0, 0, 0, 0);
-            transactionDate.setHours(0, 0, 0, 0);
-            
-            if (endDate <= today) {
-                errors.push('套餐结束日期必须晚于今天');
-            }
-            
-            if (transactionDate > endDate) {
-                errors.push('购买日期不能晚于结束日期');
-            }
         }
         
         return errors;
@@ -1305,18 +1303,35 @@ const TrafficEventHandlers = {
     // 流量计算按钮点击事件
     calculateTrafficValue() {
         try {
-            // 收集输入数据
+            // 收集基础输入数据
             const inputData = {
                 monthlyTraffic: parseFloat(document.getElementById('monthlyTraffic').value) || 0,
                 usedTraffic: parseFloat(document.getElementById('usedTraffic').value) || 0,
                 billingCycle: parseInt(document.getElementById('trafficCycle').value) || 0,
                 originalPrice: parseFloat(document.getElementById('originalPrice').value) || 0,
                 actualPriceCNY: parseFloat(document.getElementById('actualPriceCNY').value) || 0,
-                actualPriceForeign: parseFloat(document.getElementById('actualPriceForeign').value) || 0,
                 exchangeRate: parseFloat(document.getElementById('trafficExchangeRate').value) || 0,
                 transactionDate: document.getElementById('trafficTransactionDate').value,
                 endDate: document.getElementById('trafficExpiryDate').value
             };
+            
+            // 收集溢价模式相关数据
+            const premiumModeSwitch = document.getElementById('premiumModeSwitch');
+            const isPremiumMode = premiumModeSwitch ? premiumModeSwitch.selected : false;
+            
+            inputData.isPremiumMode = isPremiumMode;
+            
+            console.log('溢价模式状态:', isPremiumMode, '溢价金额:', inputData.actualPriceCNY); // 调试日志
+            
+            if (isPremiumMode) {
+                // 溢价模式下，actualPriceCNY字段输入的是溢价金额
+                inputData.premiumAmount = inputData.actualPriceCNY;
+                inputData.actualPriceCNY = 0; // 清零，将在计算中自动计算
+                console.log('溢价模式：溢价金额设置为', inputData.premiumAmount); // 调试日志
+            } else {
+                inputData.premiumAmount = 0;
+                console.log('直接价格模式：实际价格为', inputData.actualPriceCNY); // 调试日志
+            }
             
             // 验证输入数据
             const validationErrors = TrafficValidation.validateTrafficInputs(inputData);
@@ -1592,6 +1607,41 @@ function initTrafficCalculator() {
         if (officialPriceScreenshotBtn) {
             officialPriceScreenshotBtn.addEventListener('click', () => {
                 captureOfficialPriceResult();
+            });
+        }
+
+        // 溢价模式切换开关事件
+        const premiumModeSwitch = document.getElementById('premiumModeSwitch');
+        const actualPriceCNYField = document.getElementById('actualPriceCNY');
+        const priceInputGroup = actualPriceCNYField?.closest('.price-input-group');
+        
+        if (premiumModeSwitch && actualPriceCNYField) {
+            premiumModeSwitch.addEventListener('change', () => {
+                const isPremiumMode = premiumModeSwitch.selected;
+                
+                console.log('溢价模式切换:', isPremiumMode); // 调试日志
+                
+                if (isPremiumMode) {
+                    // 切换到溢价模式
+                    actualPriceCNYField.label = '溢价金额';
+                    actualPriceCNYField.supportingText = '在官方价值基础上的溢价';
+                    priceInputGroup?.classList.add('premium-mode');
+                    console.log('已切换到溢价模式'); // 调试日志
+                } else {
+                    // 切换到直接价格模式
+                    actualPriceCNYField.label = '实际价格';
+                    actualPriceCNYField.supportingText = '人民币';
+                    priceInputGroup?.classList.remove('premium-mode');
+                    console.log('已切换到直接价格模式'); // 调试日志
+                }
+                
+                // 清空当前输入值，避免模式切换时的数据混淆
+                actualPriceCNYField.value = '';
+            });
+        } else {
+            console.error('溢价模式切换元素未找到:', {
+                premiumModeSwitch: !!premiumModeSwitch,
+                actualPriceCNYField: !!actualPriceCNYField
             });
         }
     }, 200);
