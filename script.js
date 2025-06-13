@@ -54,6 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('resetSettings').addEventListener('click', resetSettings);
     document.querySelector('.toggle-password').addEventListener('click', togglePasswordVisibility);
 
+    // 初始化流量计算器
+    initTrafficCalculator();
+
     // ESC键关闭侧边栏
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -798,4 +801,611 @@ function getCycleText(cycle) {
         case 60: return '五年';
         default: return '未知周期';
     }
+}
+
+// VPS流量价值计算器核心逻辑
+const TrafficCalculator = {
+    // 计算总流量配额（按实际时间计算）
+    calculateTotalTraffic(monthlyTraffic, transactionDate, endDate) {
+        const transaction = new Date(transactionDate);
+        const end = new Date(endDate);
+        
+        // 设置时间为当天开始
+        transaction.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+        
+        // 计算实际天数
+        const totalDays = Math.ceil((end - transaction) / (1000 * 60 * 60 * 24));
+        
+        // 月流量配额按30天计算，按实际天数分配
+        return (monthlyTraffic / 30) * totalDays;
+    },
+    
+    // 计算剩余流量
+    calculateRemainingTraffic(totalTraffic, usedTraffic) {
+        return Math.max(0, totalTraffic - usedTraffic);
+    },
+    
+
+    
+    // 处理价格输入（优先人民币）
+    processPriceInput(actualPriceCNY, actualPriceForeign, exchangeRate) {
+        if (actualPriceCNY && actualPriceCNY > 0) {
+            return {
+                finalPrice: actualPriceCNY,
+                currency: 'CNY',
+                source: 'direct'
+            };
+        } else if (actualPriceForeign && actualPriceForeign > 0 && exchangeRate > 0) {
+            return {
+                finalPrice: actualPriceForeign * exchangeRate,
+                currency: 'CNY',
+                source: 'converted',
+                originalAmount: actualPriceForeign
+            };
+        }
+        throw new Error('请输入有效的购买价格');
+    },
+    
+    // 性价比评级
+    getValueRating(ratio) {
+        if (ratio >= 2.0) return { level: 'S', text: '超值', color: 'success' };
+        if (ratio >= 1.5) return { level: 'A', text: '优秀', color: 'primary' };  
+        if (ratio >= 1.2) return { level: 'B', text: '良好', color: 'secondary' };
+        if (ratio >= 1.0) return { level: 'C', text: '一般', color: 'warning' };
+        return { level: 'D', text: '较差', color: 'error' };
+    },
+    
+    // 主计算方法
+    calculate(params) {
+        const {
+            monthlyTraffic,
+            usedTraffic, 
+            billingCycle,
+            originalPrice,
+            actualPriceCNY,
+            actualPriceForeign,
+            exchangeRate,
+            transactionDate,
+            endDate
+        } = params;
+        
+        try {
+            // 1. 基础流量计算
+            const totalTraffic = this.calculateTotalTraffic(monthlyTraffic, transactionDate, endDate);
+            const remainingTraffic = this.calculateRemainingTraffic(totalTraffic, usedTraffic);
+            const usageRate = totalTraffic > 0 ? ((usedTraffic / totalTraffic) * 100).toFixed(1) : '0';
+            
+            // 2. 价格处理 - 优先人民币
+            const actualPriceInfo = this.processPriceInput(actualPriceCNY, actualPriceForeign, exchangeRate);
+            const actualPriceInCNY = actualPriceInfo.finalPrice;
+            const originalPriceInCNY = originalPrice * exchangeRate;
+            
+            // 3. 单价计算（人民币/100GB）
+            // 官方流量单价 = (套餐原价 ÷ 计费周期月数) ÷ 月流量配额 × 100
+            const monthlyOriginalPrice = originalPriceInCNY / billingCycle;
+            const originalUnitPrice = monthlyTraffic > 0 ? (monthlyOriginalPrice / monthlyTraffic) * 100 : 0;
+            
+            // 实际流量单价 = 实际价格 ÷ 剩余流量 × 100（购买剩余套餐的单价）
+            const actualUnitPrice = remainingTraffic > 0 ? (actualPriceInCNY / remainingTraffic) * 100 : 0;
+            
+            // 4. 价值与节省分析
+            // 剩余流量官方价值 = 剩余流量 × 官方流量单价 ÷ 100
+            const remainingTrafficOriginalValue = (remainingTraffic / 100) * originalUnitPrice;
+            
+            // 总节省金额 = 剩余流量官方价值 - 实际价格（购买剩余套餐节省的钱）
+            const totalSavedAmount = remainingTrafficOriginalValue - actualPriceInCNY;
+            
+            // 剩余流量节省金额（等同于总节省金额，因为买的就是剩余流量）
+            const remainingSavedAmount = totalSavedAmount;
+            
+            // 5. 性价比分析
+            // 折扣率 = 节省金额 ÷ 剩余流量官方价值 × 100
+            const discountRate = remainingTrafficOriginalValue > 0 ? ((totalSavedAmount / remainingTrafficOriginalValue) * 100).toFixed(1) : '0';
+            // 性价比 = 剩余流量官方价值 ÷ 实际价格
+            const costEfficiencyRatio = actualPriceInCNY > 0 ? (remainingTrafficOriginalValue / actualPriceInCNY) : 0;
+            
+            // 6. 计算剩余天数（简化版）
+            const transaction = new Date(transactionDate);
+            const end = new Date(endDate);
+            const now = new Date();
+            
+            // 设置时间为当天开始
+            transaction.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            now.setHours(0, 0, 0, 0);
+            
+            const totalDays = Math.ceil((end - transaction) / (1000 * 60 * 60 * 24));
+            const remainingDays = Math.max(0, Math.ceil((end - now) / (1000 * 60 * 60 * 24)));
+            
+            // 7. 性价比评级
+            const valueRating = this.getValueRating(costEfficiencyRatio);
+            
+            return {
+                // 基础流量信息
+                totalTraffic: Math.round(totalTraffic),
+                remainingTraffic: Math.round(remainingTraffic),
+                usageRate: usageRate + '%',
+                
+                // 计算详情（用于调试和展示）
+                actualDays: totalDays,
+                dailyTrafficQuota: (monthlyTraffic / 30).toFixed(2),
+                billingCycleMonths: billingCycle,
+                monthlyOriginalPrice: monthlyOriginalPrice.toFixed(2),
+                actualPurchasePrice: actualPriceInCNY.toFixed(2),
+                
+                // 单价信息
+                originalUnitPrice: originalUnitPrice.toFixed(2),
+                actualUnitPrice: actualUnitPrice.toFixed(2),
+                unitPriceSavings: (originalUnitPrice - actualUnitPrice).toFixed(2),
+                
+                // 价值分析
+                remainingTrafficOriginalValue: remainingTrafficOriginalValue.toFixed(2),
+                actualTotalPaid: actualPriceInCNY.toFixed(2),
+                
+                // 节省分析
+                totalSavedAmount: totalSavedAmount.toFixed(2),
+                remainingSavedAmount: remainingSavedAmount.toFixed(2),
+                discountRate: discountRate + '%',
+                costEfficiencyRatio: costEfficiencyRatio.toFixed(2),
+                
+                // 时间信息
+                totalDays: totalDays,
+                remainingDays: remainingDays,
+                
+                // 性价比评级
+                valueRating: valueRating,
+                
+                // 价格来源信息
+                priceSource: actualPriceInfo
+            };
+        } catch (error) {
+            throw new Error('计算过程中发生错误: ' + error.message);
+        }
+    }
+};
+
+// VPS流量计算器数据验证
+const TrafficValidation = {
+    // 验证流量计算输入数据
+    validateTrafficInputs(data) {
+        const errors = [];
+        
+        // 流量验证
+        if (!data.monthlyTraffic || data.monthlyTraffic <= 0) {
+            errors.push('月流量配额必须大于0');
+        }
+        
+        if (data.usedTraffic < 0) {
+            errors.push('已使用流量不能为负数');
+        }
+        
+        // 计算实际总流量配额进行验证
+        if (data.transactionDate && data.endDate) {
+            const transaction = new Date(data.transactionDate);
+            const end = new Date(data.endDate);
+            transaction.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            const totalDays = Math.ceil((end - transaction) / (1000 * 60 * 60 * 24));
+            const totalTraffic = (data.monthlyTraffic / 30) * totalDays;
+            
+            if (data.usedTraffic > totalTraffic) {
+                errors.push(`已使用流量不能超过总配额 (${totalTraffic.toFixed(1)} GB)`);
+            }
+        }
+        
+        // 价格验证
+        if (!data.originalPrice || data.originalPrice <= 0) {
+            errors.push('套餐原价必须大于0');
+        }
+        
+        // 验证至少有一个有效的实际价格
+        const hasValidCNYPrice = data.actualPriceCNY && data.actualPriceCNY > 0;
+        const hasValidForeignPrice = data.actualPriceForeign && data.actualPriceForeign > 0 && data.exchangeRate > 0;
+        
+        if (!hasValidCNYPrice && !hasValidForeignPrice) {
+            errors.push('请输入人民币价格或外币价格+汇率');
+        }
+        
+        // 计费周期验证
+        if (!data.billingCycle || data.billingCycle <= 0) {
+            errors.push('请选择计费周期');
+        }
+        
+        // 汇率验证
+        if (!data.exchangeRate || data.exchangeRate <= 0) {
+            errors.push('汇率必须大于0');
+        }
+        
+        // 日期验证
+        if (!data.transactionDate) {
+            errors.push('请选择购买日期');
+        }
+        
+        if (!data.endDate) {
+            errors.push('请选择到期时间');
+        }
+        
+        if (data.transactionDate && data.endDate) {
+            const transactionDate = new Date(data.transactionDate);
+            const endDate = new Date(data.endDate);
+            const today = new Date();
+            
+            today.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+            transactionDate.setHours(0, 0, 0, 0);
+            
+            if (endDate <= today) {
+                errors.push('套餐结束日期必须晚于今天');
+            }
+            
+            if (transactionDate > endDate) {
+                errors.push('购买日期不能晚于结束日期');
+            }
+        }
+        
+        return errors;
+    }
+};
+
+// VPS流量计算器事件处理器
+const TrafficEventHandlers = {
+    // 获取流量计算器汇率
+    fetchTrafficExchangeRate() {
+        const currency = document.getElementById('trafficCurrency').value;
+        const exchangeRateField = document.getElementById('trafficExchangeRate');
+        
+        // 显示加载状态
+        const refreshBtn = document.getElementById('refreshTrafficRate');
+        if (refreshBtn) {
+            refreshBtn.querySelector('i').className = 'fas fa-spinner fa-spin';
+        }
+        
+        fetch(`https://777100.xyz/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! 状态: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('汇率数据:', data); // 调试日志
+            
+            // 使用与原始汇率获取逻辑相同的计算方式
+            const originRate = data.rates[currency];
+            const targetRate = data.rates.CNY;
+            const exchangeRate = targetRate/originRate;
+            
+            if (exchangeRate && exchangeRate > 0) {
+                exchangeRateField.value = exchangeRate.toFixed(4);
+                
+                // 更新汇率更新时间，使用与原始逻辑相同的时间格式
+                const utcDate = new Date(data.timestamp);
+                const eastEightTime = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000));
+
+                const year = eastEightTime.getUTCFullYear();
+                const month = String(eastEightTime.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(eastEightTime.getUTCDate()).padStart(2, '0');
+                const hours = String(eastEightTime.getUTCHours()).padStart(2, '0');
+                const minutes = String(eastEightTime.getUTCMinutes()).padStart(2, '0');
+                
+                const updateTimeText = `${year}/${month}/${day} ${hours}:${minutes}`;
+                
+                // 使用setTimeout确保Material Web组件已经渲染完成
+                setTimeout(() => {
+                    if (exchangeRateField) {
+                        exchangeRateField.setAttribute('supporting-text', `最后更新: ${updateTimeText}`);
+                    }
+                }, 100);
+                
+                showNotification(`${currency}汇率已更新: ${exchangeRate.toFixed(4)}`, 'success');
+            } else {
+                console.error('汇率数据无效:', data);
+                showNotification(`获取${currency}汇率失败，请手动输入`, 'warning');
+                this.setDefaultTrafficExchangeRate(currency);
+            }
+        })
+        .catch(error => {
+            console.error('获取汇率失败:', error);
+            showNotification('获取汇率失败，可手动输入汇率', 'warning');
+            this.setDefaultTrafficExchangeRate(currency);
+        })
+        .finally(() => {
+            // 恢复刷新按钮状态
+            if (refreshBtn) {
+                refreshBtn.querySelector('i').className = 'fas fa-sync-alt';
+            }
+        });
+    },
+    
+    // 设置默认汇率（当获取失败时）
+    setDefaultTrafficExchangeRate(currency) {
+        // 使用与主汇率计算器相同的数据结构
+        const defaultData = {
+            rates: {
+                'USD': 1.0,
+                'EUR': 0.923,
+                'GBP': 0.792,
+                'JPY': 151.04,
+                'KRW': 1317.5,
+                'HKD': 7.786,
+                'TWD': 30.85,
+                'SGD': 1.33,
+                'AUD': 1.495,
+                'CAD': 1.355,
+                'CNY': 7.25
+            }
+        };
+        
+        const originRate = defaultData.rates[currency];
+        const targetRate = defaultData.rates.CNY;
+        const defaultRate = targetRate / originRate;
+        const exchangeRateField = document.getElementById('trafficExchangeRate');
+        
+        if (exchangeRateField && !exchangeRateField.value) {
+            exchangeRateField.value = defaultRate.toFixed(4);
+            setTimeout(() => {
+                exchangeRateField.setAttribute('supporting-text', `使用默认汇率，可手动修改`);
+            }, 100);
+        }
+    },
+    
+    // 初始化流量计算器日期选择器
+    initializeTrafficDatePickers() {
+        // 到期日期选择器
+        flatpickr("#trafficExpiryDate", {
+            dateFormat: "Y-m-d",
+            locale: "zh",
+            placeholder: "选择到期日期",
+            minDate: "today",
+            onChange: function(_selectedDates, dateStr) {
+                const transactionPicker = document.getElementById('trafficTransactionDate')._flatpickr;
+                if (transactionPicker) {
+                    transactionPicker.set('maxDate', dateStr);
+                }
+                // 移除自动设置默认日期的逻辑，只在确实需要时才设置
+                TrafficEventHandlers.validateTrafficDates();
+            }
+        });
+
+        // 购买日期选择器
+        flatpickr("#trafficTransactionDate", {
+            dateFormat: "Y-m-d",
+            locale: "zh",
+            placeholder: "选择购买日期",
+            onChange: this.validateTrafficDates.bind(this)
+        });
+    },
+    
+    // 验证流量计算器日期
+    validateTrafficDates() {
+        const expiryDateInput = document.getElementById('trafficExpiryDate').value;
+        const transactionDateInput = document.getElementById('trafficTransactionDate').value;
+        
+        if (!expiryDateInput || !transactionDateInput) return;
+
+        const expiryDate = new Date(expiryDateInput);
+        const transactionDate = new Date(transactionDateInput);
+        const today = new Date();
+
+        // 设置所有时间为当天的开始（00:00:00）
+        expiryDate.setHours(0, 0, 0, 0);
+        transactionDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        if (expiryDate <= today) {
+            showNotification('到期日期必须晚于今天', 'error');
+            document.getElementById('trafficExpiryDate').value = '';
+            return;
+        }
+
+        if (transactionDate > expiryDate) {
+            showNotification('购买日期不能晚于到期日期', 'error');
+            // 只有当购买日期确实晚于到期日期时才重置
+            return;
+        }
+
+        if (expiryDate.getTime() === transactionDate.getTime()) {
+            showNotification('购买日期不能等于到期日期', 'error');
+            // 只有当日期确实相等时才提示错误，不清空日期
+            return;
+        }
+    },
+    
+    // 设置默认交易日期
+    setDefaultTrafficTransactionDate() {
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        document.getElementById('trafficTransactionDate').value = formattedDate;
+    },
+    
+    // 流量计算按钮点击事件
+    calculateTrafficValue() {
+        try {
+            // 收集输入数据
+            const inputData = {
+                monthlyTraffic: parseFloat(document.getElementById('monthlyTraffic').value) || 0,
+                usedTraffic: parseFloat(document.getElementById('usedTraffic').value) || 0,
+                billingCycle: parseInt(document.getElementById('trafficCycle').value) || 0,
+                originalPrice: parseFloat(document.getElementById('originalPrice').value) || 0,
+                actualPriceCNY: parseFloat(document.getElementById('actualPriceCNY').value) || 0,
+                actualPriceForeign: parseFloat(document.getElementById('actualPriceForeign').value) || 0,
+                exchangeRate: parseFloat(document.getElementById('trafficExchangeRate').value) || 0,
+                transactionDate: document.getElementById('trafficTransactionDate').value,
+                endDate: document.getElementById('trafficExpiryDate').value
+            };
+            
+            // 验证输入数据
+            const validationErrors = TrafficValidation.validateTrafficInputs(inputData);
+            if (validationErrors.length > 0) {
+                showNotification(validationErrors[0], 'error');
+                return;
+            }
+            
+            // 执行计算
+            const result = TrafficCalculator.calculate(inputData);
+            
+            // 更新结果显示
+            this.updateTrafficResults(result);
+            
+            // 显示成功通知
+            showNotification('流量价值计算完成', 'success');
+            
+            // 触发成功动画
+            if (parseFloat(result.totalSavedAmount) > 0) {
+                triggerConfetti();
+            }
+            
+        } catch (error) {
+            console.error('流量计算错误:', error);
+            showNotification(error.message, 'error');
+        }
+    },
+    
+    // 更新流量计算结果显示
+    updateTrafficResults(result) {
+        // 基础流量信息
+        document.getElementById('trafficTotalTraffic').textContent = `${result.totalTraffic} GB`;
+        document.getElementById('trafficRemainingTraffic').textContent = `${result.remainingTraffic} GB`;
+        document.getElementById('trafficUsageRate').textContent = result.usageRate;
+        
+        // 添加计算说明到各个元素的hover提示
+        const totalTrafficElement = document.getElementById('trafficTotalTraffic');
+        if (totalTrafficElement && result.actualDays && result.dailyTrafficQuota) {
+            totalTrafficElement.title = `计算方式: ${result.dailyTrafficQuota} GB/天 × ${result.actualDays} 天 = ${result.totalTraffic} GB`;
+        }
+        
+        // 官方流量单价的计算说明
+        const originalUnitPriceElement = document.getElementById('trafficOriginalUnitPrice');
+        if (originalUnitPriceElement && result.monthlyOriginalPrice && result.billingCycleMonths) {
+            originalUnitPriceElement.title = `计算方式: (套餐原价 ÷ ${result.billingCycleMonths}月) ÷ 月流量 = ${result.monthlyOriginalPrice} ÷ ${document.getElementById('monthlyTraffic').value}GB × 100 = ${result.originalUnitPrice}元/100GB`;
+        }
+        
+        // 实际流量单价的计算说明
+        const actualUnitPriceElement = document.getElementById('trafficActualUnitPrice');
+        if (actualUnitPriceElement && result.actualPurchasePrice) {
+            actualUnitPriceElement.title = `计算方式: 实际价格 ÷ 剩余流量 = ${result.actualPurchasePrice} ÷ ${result.remainingTraffic}GB × 100 = ${result.actualUnitPrice}元/100GB`;
+        }
+        
+        // 价格对比分析
+        document.getElementById('trafficOriginalUnitPrice').textContent = `${result.originalUnitPrice} 元/100GB`;
+        document.getElementById('trafficActualUnitPrice').textContent = `${result.actualUnitPrice} 元/100GB`;
+        document.getElementById('trafficOriginalValue').textContent = `${result.remainingTrafficOriginalValue} 元`;
+        
+        // 节省与性价比
+        document.getElementById('trafficTotalSaved').textContent = `${result.totalSavedAmount} 元`;
+        document.getElementById('trafficDiscountRate').textContent = result.discountRate;
+        
+        // 性价比评级
+        const ratingElement = document.getElementById('trafficValueRating');
+        const ratingBadge = ratingElement.querySelector('.rating-badge');
+        if (ratingBadge) {
+            ratingBadge.textContent = result.valueRating.level;
+            ratingBadge.className = `rating-badge rating-${result.valueRating.color}`;
+            ratingBadge.title = result.valueRating.text;
+        }
+        
+        // 时间和性价比信息
+        document.getElementById('trafficRemainingDays').textContent = `${result.remainingDays} 天`;
+        document.getElementById('trafficCostEfficiency').textContent = `${result.costEfficiencyRatio}:1`;
+     }
+};
+
+// 初始化流量计算器
+function initTrafficCalculator() {
+    // 延迟初始化，确保Material Web组件完全加载
+    setTimeout(() => {
+        // 初始化流量计算器日期选择器
+        TrafficEventHandlers.initializeTrafficDatePickers();
+        
+        // 设置默认购买日期
+        TrafficEventHandlers.setDefaultTrafficTransactionDate();
+        
+        // 设置默认汇率（避免空值导致的错误）
+        const currency = document.getElementById('trafficCurrency')?.value || 'USD';
+        TrafficEventHandlers.setDefaultTrafficExchangeRate(currency);
+        
+        // 延迟获取实时汇率
+        setTimeout(() => {
+            TrafficEventHandlers.fetchTrafficExchangeRate();
+        }, 500);
+    }, 300);
+    
+    // 等待Material Web组件加载完成后添加事件监听器
+    setTimeout(() => {
+        // 币种变化事件
+        const trafficCurrencySelect = document.getElementById('trafficCurrency');
+        if (trafficCurrencySelect && trafficCurrencySelect.addEventListener) {
+            trafficCurrencySelect.addEventListener('change', () => {
+                TrafficEventHandlers.fetchTrafficExchangeRate();
+            });
+        }
+        
+        // 汇率刷新按钮事件
+        const refreshTrafficRateBtn = document.getElementById('refreshTrafficRate');
+        if (refreshTrafficRateBtn) {
+            refreshTrafficRateBtn.addEventListener('click', () => {
+                TrafficEventHandlers.fetchTrafficExchangeRate();
+            });
+        }
+        
+        // 汇率输入验证
+        const trafficExchangeRateField = document.getElementById('trafficExchangeRate');
+        if (trafficExchangeRateField) {
+            trafficExchangeRateField.addEventListener('input', () => {
+                const value = parseFloat(trafficExchangeRateField.value);
+                if (value && value > 0) {
+                    setTimeout(() => {
+                        trafficExchangeRateField.setAttribute('supporting-text', '手动输入的汇率');
+                    }, 100);
+                } else if (trafficExchangeRateField.value !== '') {
+                    setTimeout(() => {
+                        trafficExchangeRateField.setAttribute('supporting-text', '汇率必须大于0');
+                    }, 100);
+                }
+            });
+        }
+        
+        // 计算按钮点击事件
+        const calculateTrafficBtn = document.getElementById('calculateTrafficBtn');
+        if (calculateTrafficBtn) {
+            calculateTrafficBtn.addEventListener('click', () => {
+                TrafficEventHandlers.calculateTrafficValue();
+            });
+        }
+        
+        // 流量计算器截图按钮事件
+        const trafficScreenshotBtn = document.getElementById('trafficScreenshotBtn');
+        if (trafficScreenshotBtn) {
+            trafficScreenshotBtn.addEventListener('click', () => {
+                captureTrafficResult();
+            });
+        }
+    }, 200);
+}
+
+// 流量计算器截图功能
+function captureTrafficResult() {
+    const resultElement = document.getElementById('trafficResult');
+    if (!resultElement) {
+        showNotification('找不到流量计算结果区域', 'error');
+        return;
+    }
+    
+    html2canvas(resultElement, {
+        backgroundColor: 'var(--md-sys-color-background)',
+        scale: 2,
+        useCORS: true
+    }).then(canvas => {
+        canvas.toBlob(blob => {
+            if (blob) {
+                uploadImage(blob);
+            } else {
+                showNotification('截图生成失败', 'error');
+            }
+        }, 'image/png');
+    }).catch(error => {
+        console.error('截图失败:', error);
+        showNotification('截图失败，请重试', 'error');
+    });
 }

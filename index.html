@@ -292,6 +292,180 @@
                 </md-filled-button>
             </section>
 
+            <!-- VPS流量价值计算器 -->
+            <section class="traffic-calculator md-elevation--2">
+                <div class="calculator-header">
+                    <h2 class="md-typescale-headline-medium">
+                        <i class="fas fa-chart-line"></i>
+                        VPS流量价值计算器
+                    </h2>
+                </div>
+                
+                <div class="input-group">
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="monthlyTraffic"
+                            label="月流量配额"
+                            type="number"
+                            step="1"
+                            supporting-text="单位：GB">
+                            <i class="fas fa-database" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="usedTraffic"
+                            label="已使用流量"
+                            type="number"
+                            step="0.1"
+                            supporting-text="单位：GB">
+                            <i class="fas fa-chart-pie" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-group">
+                        <md-outlined-select id="trafficCurrency" label="币种">
+                            <i class="fas fa-globe" slot="leading-icon"></i>
+                            <md-select-option value="USD" selected>
+                                <div slot="headline">美元 (USD)</div>
+                            </md-select-option>
+                            <md-select-option value="AUD">
+                                <div slot="headline">澳币 (AUD)</div>
+                            </md-select-option>
+                            <md-select-option value="CAD">
+                                <div slot="headline">加拿大元 (CAD)</div>
+                            </md-select-option>
+                            <md-select-option value="CNY">
+                                <div slot="headline">人民币 (CNY)</div>
+                            </md-select-option>
+                            <md-select-option value="EUR">
+                                <div slot="headline">欧元 (EUR)</div>
+                            </md-select-option>
+                            <md-select-option value="GBP">
+                                <div slot="headline">英镑 (GBP)</div>
+                            </md-select-option>
+                            <md-select-option value="HKD">
+                                <div slot="headline">港元 (HKD)</div>
+                            </md-select-option>
+                            <md-select-option value="JPY">
+                                <div slot="headline">日元 (JPY)</div>
+                            </md-select-option>
+                            <md-select-option value="KRW">
+                                <div slot="headline">韩元 (KRW)</div>
+                            </md-select-option>
+                            <md-select-option value="SGD">
+                                <div slot="headline">新加坡元 (SGD)</div>
+                            </md-select-option>
+                            <md-select-option value="TWD">
+                                <div slot="headline">新台币 (TWD)</div>
+                            </md-select-option>
+                        </md-outlined-select>
+                    </div>
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="trafficExchangeRate"
+                            label="当前汇率"
+                            type="number"
+                            step="0.0001"
+                            supporting-text="点击获取最新汇率或手动输入"
+                            supporting-text-id="trafficUpdateDate">
+                            <i class="fas fa-exchange-alt" slot="leading-icon"></i>
+                            <md-icon-button slot="trailing-icon" id="refreshTrafficRate" title="刷新汇率">
+                                <i class="fas fa-sync-alt"></i>
+                            </md-icon-button>
+                        </md-outlined-text-field>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="originalPrice"
+                            label="套餐原价"
+                            type="number"
+                            step="0.01"
+                            supporting-text="官方价格">
+                            <i class="fas fa-tag" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="actualPriceCNY"
+                            label="实际价格(人民币)"
+                            type="number"
+                            step="0.01"
+                            supporting-text="优先填写人民币">
+                            <i class="fas fa-yen-sign" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="actualPriceForeign"
+                            label="实际价格(外币)"
+                            type="number"
+                            step="0.01"
+                            supporting-text="可选，若未填人民币价格">
+                            <i class="fas fa-money-bill" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                    <div class="form-group">
+                        <md-outlined-select id="trafficCycle" label="计费周期">
+                            <i class="fas fa-redo" slot="leading-icon"></i>
+                            <md-select-option value="0">
+                                <div slot="headline">请选择</div>
+                            </md-select-option>
+                            <md-select-option value="1">
+                                <div slot="headline">月付</div>
+                            </md-select-option>
+                            <md-select-option value="3">
+                                <div slot="headline">季付</div>
+                            </md-select-option>
+                            <md-select-option value="6">
+                                <div slot="headline">半年付</div>
+                            </md-select-option>
+                            <md-select-option value="12">
+                                <div slot="headline">年付</div>
+                            </md-select-option>
+                            <md-select-option value="24">
+                                <div slot="headline">两年付</div>
+                            </md-select-option>
+                            <md-select-option value="36">
+                                <div slot="headline">三年付</div>
+                            </md-select-option>
+                        </md-outlined-select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="trafficTransactionDate"
+                            label="购买日期"
+                            readonly>
+                            <i class="far fa-calendar-check" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="trafficExpiryDate"
+                            label="到期时间"
+                            readonly>
+                            <i class="far fa-calendar-times" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                </div>
+
+                <md-filled-button id="calculateTrafficBtn" class="calculate-button">
+                    <i class="fas fa-chart-bar" slot="icon"></i>
+                    计算流量价值
+                </md-filled-button>
+            </section>
+
             <section id="calcResult" class="result md-elevation--2">
                 <div class="result-header">
                     <h2 class="md-typescale-headline-medium">
@@ -355,6 +529,129 @@
                                 剩余价值
                             </div>
                             <div id="resultValue" class="result-value md-typescale-headline-small">0.000 元</div>
+                        </div>
+                    </md-card>
+                </div>
+            </section>
+
+            <!-- VPS流量价值计算结果 -->
+            <section id="trafficResult" class="traffic-result md-elevation--2">
+                <div class="result-header">
+                    <h2 class="md-typescale-headline-medium">
+                        <i class="fas fa-chart-bar"></i>
+                        流量价值分析
+                    </h2>
+                    <md-icon-button id="trafficScreenshotBtn" title="截图上传到图床">
+                        <i class="fas fa-camera"></i>
+                    </md-icon-button>
+                </div>
+                <div class="result-grid">
+                    <!-- 基础流量信息 -->
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-database"></i>
+                                总流量配额
+                            </div>
+                            <div id="trafficTotalTraffic" class="result-value md-typescale-body-large">0 GB</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-chart-pie"></i>
+                                剩余流量
+                            </div>
+                            <div id="trafficRemainingTraffic" class="result-value md-typescale-body-large">0 GB</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-percentage"></i>
+                                使用率
+                            </div>
+                            <div id="trafficUsageRate" class="result-value md-typescale-body-large">0%</div>
+                        </div>
+                    </md-card>
+                    
+                    <!-- 价格对比分析 -->
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-tag"></i>
+                                官方流量单价
+                            </div>
+                            <div id="trafficOriginalUnitPrice" class="result-value md-typescale-body-large">0.00 元/100GB</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-money-bill"></i>
+                                实际流量单价
+                            </div>
+                            <div id="trafficActualUnitPrice" class="result-value md-typescale-body-large">0.00 元/100GB</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-coins"></i>
+                                剩余流量官方价值
+                            </div>
+                            <div id="trafficOriginalValue" class="result-value md-typescale-body-large">0.00 元</div>
+                        </div>
+                    </md-card>
+                    
+                    <!-- 节省与性价比 -->
+                    <md-card class="result-item highlight">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-piggy-bank"></i>
+                                总节省金额
+                            </div>
+                            <div id="trafficTotalSaved" class="result-value md-typescale-headline-small">0.00 元</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-percent"></i>
+                                折扣率
+                            </div>
+                            <div id="trafficDiscountRate" class="result-value md-typescale-body-large">0%</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-star"></i>
+                                性价比评级
+                            </div>
+                            <div id="trafficValueRating" class="result-value md-typescale-body-large">
+                                <span class="rating-badge">-</span>
+                            </div>
+                        </div>
+                    </md-card>
+                    
+                    <!-- 剩余时间信息 -->
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="far fa-clock"></i>
+                                剩余天数
+                            </div>
+                            <div id="trafficRemainingDays" class="result-value md-typescale-body-large">0 天</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-chart-line"></i>
+                                性价比
+                            </div>
+                            <div id="trafficCostEfficiency" class="result-value md-typescale-body-large">-</div>
                         </div>
                     </md-card>
                 </div>

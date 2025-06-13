@@ -182,7 +182,7 @@ main {
 }
 
 /* 计算器和结果区域的共同样式 */
-.calculator, .result {
+.calculator, .result, .traffic-calculator, .traffic-result {
     background-color: var(--md-sys-color-surface-container);
     border-radius: 24px;
     padding: 2rem;
@@ -1215,6 +1215,168 @@ md-icon-button i {
 
 [data-theme="dark"] md-card {
     --md-card-container-color: var(--md-sys-color-surface-container);
+}
+
+/* VPS流量计算器专用样式 */
+.traffic-calculator {
+    margin-top: 2rem;
+}
+
+.traffic-calculator .calculator-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.traffic-calculator .calculator-header h2 {
+    color: var(--md-sys-color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.traffic-calculator .calculator-header h2 i {
+    font-size: inherit;
+}
+
+/* 流量计算结果区域样式 */
+.traffic-result {
+    margin-top: 2rem;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+.traffic-result .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.traffic-result .result-header h2 {
+    color: var(--md-sys-color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.traffic-result .result-header h2 i {
+    font-size: inherit;
+}
+
+/* 性价比评级样式 */
+.rating-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    min-width: 2rem;
+}
+
+.rating-badge.rating-success {
+    background-color: var(--md-sys-color-success-container);
+    color: var(--md-sys-color-on-success-container);
+}
+
+.rating-badge.rating-primary {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+}
+
+.rating-badge.rating-secondary {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+.rating-badge.rating-warning {
+    background-color: #FFF8E1;
+    color: #F57F17;
+}
+
+.rating-badge.rating-error {
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+}
+
+[data-theme="dark"] .rating-badge.rating-warning {
+    background-color: #3E2723;
+    color: #FFB74D;
+}
+
+/* 流量计算器表单样式优化 */
+.traffic-calculator .input-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.traffic-calculator .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.traffic-calculator .calculate-button {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* 修复Material Web组件的潜在渲染问题 */
+.traffic-calculator md-outlined-text-field,
+.traffic-calculator md-outlined-select {
+    min-height: 56px;
+    --md-outlined-field-container-shape: 4px;
+}
+
+.traffic-calculator md-outlined-text-field[supporting-text] {
+    margin-bottom: 4px;
+}
+
+/* 汇率刷新按钮样式 */
+#refreshTrafficRate {
+    --md-icon-button-icon-color: var(--md-sys-color-primary);
+}
+
+#refreshTrafficRate:hover {
+    --md-icon-button-state-layer-color: var(--md-sys-color-primary);
+    --md-icon-button-state-layer-opacity: 0.08;
+}
+
+/* 解决transform NaN问题的临时修复 */
+md-outlined-text-field[type="number"] {
+    --md-outlined-field-focus-label-text-transform: none;
+}
+
+/* 确保Material Web组件正常显示 */
+md-outlined-text-field,
+md-outlined-select,
+md-filled-button,
+md-icon-button {
+    transform: none !important;
+    will-change: auto;
+}
+
+/* 响应式样式调整 */
+@media (max-width: 768px) {
+    .traffic-calculator .input-group {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .traffic-result {
+        position: static;
+        margin-top: 1.5rem;
+    }
+    
+    .traffic-calculator, .traffic-result {
+        padding: 1.5rem;
+    }
 }
 
 /* 主题切换和设置按钮样式 */
