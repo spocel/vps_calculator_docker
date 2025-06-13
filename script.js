@@ -1093,16 +1093,14 @@ const TrafficValidation = {
         
         // 验证价格输入（支持溢价模式）
         if (data.isPremiumMode) {
-            // 溢价模式：验证溢价金额
+            // 溢价模式：验证溢价金额（允许负数，表示打折出售）
             if (data.premiumAmount === undefined || data.premiumAmount === null) {
                 errors.push('溢价模式下请输入溢价金额');
-            } else if (data.premiumAmount < 0) {
-                errors.push('溢价金额不能为负数');
             }
         } else {
-            // 直接价格模式：验证人民币价格
-            if (!data.actualPriceCNY || data.actualPriceCNY <= 0) {
-                errors.push('请输入有效的实际价格');
+            // 直接价格模式：验证人民币价格（允许负数和0值，表示低价出售）
+            if (data.actualPriceCNY === undefined || data.actualPriceCNY === null || data.actualPriceCNY === '') {
+                errors.push('请输入实际价格');
             }
         }
         
