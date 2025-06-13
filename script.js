@@ -1242,9 +1242,26 @@ const TrafficEventHandlers = {
             onChange: function(_selectedDates, dateStr) {
                 const transactionPicker = document.getElementById('trafficTransactionDate')._flatpickr;
                 if (transactionPicker) {
+                    // 获取当前购买日期
+                    const currentTransactionDate = document.getElementById('trafficTransactionDate').value;
+                    
+                    // 设置到期日期为购买日期的最大值
                     transactionPicker.set('maxDate', dateStr);
+                    
+                    // 如果购买日期被意外清空且之前有有效值，尝试恢复
+                    const newTransactionDate = document.getElementById('trafficTransactionDate').value;
+                    if (!newTransactionDate && currentTransactionDate) {
+                        // 检查原购买日期是否仍然有效（小于等于新的到期日期）
+                        const originalDate = new Date(currentTransactionDate);
+                        const expiryDate = new Date(dateStr);
+                        
+                        if (originalDate <= expiryDate) {
+                            // 原购买日期仍然有效，恢复它
+                            transactionPicker.setDate(currentTransactionDate);
+                            console.log('恢复购买日期:', currentTransactionDate); // 调试日志
+                        }
+                    }
                 }
-                // 移除自动设置默认日期的逻辑，只在确实需要时才设置
                 TrafficEventHandlers.validateTrafficDates();
             }
         });

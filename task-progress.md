@@ -244,8 +244,9 @@ Associated Protocol: RIPER-5 + Multidimensional + Agent Protocol
         - 添加错误处理和元素存在性检查
         - 修复Material Web switch组件的属性访问，使用selected而不是checked属性
         - 修复calculateTrafficValue方法中的switch状态获取，确保溢价模式计算正确
-    *   Change Summary: 修复溢价模式切换时字段标签无法更新、switch状态获取undefined以及溢价模式计算错误的问题
-    *   Reason: Material Web组件需要使用正确的JavaScript属性：text field使用label/supportingText属性，switch使用selected属性
+        - 修复initializeTrafficDatePickers方法，防止选择到期日期时自动清空购买日期
+    *   Change Summary: 修复溢价模式切换时字段标签无法更新、switch状态获取undefined、溢价模式计算错误以及日期选择器清空购买日期的问题
+    *   Reason: Material Web组件需要使用正确的JavaScript属性，Flatpickr的set('maxDate')会自动清空超出范围的日期值
     *   Blockers: None
     *   Status: Pending Confirmation
 
