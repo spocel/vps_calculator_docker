@@ -803,6 +803,89 @@ function getCycleText(cycle) {
     }
 }
 
+function getCycleFullText(cycle) {
+    switch(parseInt(cycle)) {
+        case 1: return '1个月';
+        case 3: return '3个月';
+        case 6: return '6个月';
+        case 12: return '12个月';
+        case 24: return '24个月';
+        case 36: return '36个月';
+        case 48: return '48个月';
+        case 60: return '60个月';
+        default: return '未知周期';
+    }
+}
+
+// 官方流量单价计算器
+const OfficialPriceCalculator = {
+    // 计算官方流量单价
+    calculate(params) {
+        const {
+            monthlyTraffic,
+            billingCycle,
+            originalPrice,
+            exchangeRate
+        } = params;
+        
+        try {
+            // 基础计算
+            const originalPriceInCNY = originalPrice * exchangeRate;
+            const totalTraffic = monthlyTraffic * billingCycle;
+            const monthlyPrice = originalPriceInCNY / billingCycle;
+            const dailyPrice = monthlyPrice / 30;
+            
+            // 流量单价计算
+            const unitPricePerGB = totalTraffic > 0 ? originalPriceInCNY / totalTraffic : 0;
+            const unitPricePer100GB = unitPricePerGB * 100;
+            
+            return {
+                // 基础信息
+                monthlyTraffic: monthlyTraffic,
+                billingCycle: billingCycle,
+                totalTraffic: totalTraffic,
+                
+                // 价格信息
+                originalPriceInCNY: originalPriceInCNY.toFixed(2),
+                monthlyPrice: monthlyPrice.toFixed(2),
+                dailyPrice: dailyPrice.toFixed(2),
+                
+                // 流量单价
+                unitPricePerGB: unitPricePerGB.toFixed(4),
+                unitPricePer100GB: unitPricePer100GB.toFixed(2),
+                
+                // 汇率信息
+                exchangeRate: exchangeRate.toFixed(4)
+            };
+        } catch (error) {
+            throw new Error('官方单价计算错误: ' + error.message);
+        }
+    },
+    
+    // 验证输入数据
+    validateInputs(data) {
+        const errors = [];
+        
+        if (!data.monthlyTraffic || data.monthlyTraffic <= 0) {
+            errors.push('月流量配额必须大于0');
+        }
+        
+        if (!data.originalPrice || data.originalPrice <= 0) {
+            errors.push('套餐原价必须大于0');
+        }
+        
+        if (!data.billingCycle || data.billingCycle <= 0) {
+            errors.push('请选择计费周期');
+        }
+        
+        if (!data.exchangeRate || data.exchangeRate <= 0) {
+            errors.push('汇率必须大于0');
+        }
+        
+        return errors;
+    }
+};
+
 // VPS流量价值计算器核心逻辑
 const TrafficCalculator = {
     // 计算总流量配额（按实际时间计算）
@@ -1305,10 +1388,111 @@ const TrafficEventHandlers = {
             ratingBadge.title = result.valueRating.text;
         }
         
-        // 时间和性价比信息
+                // 时间和性价比信息
         document.getElementById('trafficRemainingDays').textContent = `${result.remainingDays} 天`;
         document.getElementById('trafficCostEfficiency').textContent = `${result.costEfficiencyRatio}:1`;
-     }
+        
+        // 显示结果区域
+        document.getElementById('trafficResult').style.display = 'block';
+        
+        // 滚动到结果区域
+        document.getElementById('trafficResult').scrollIntoView({ behavior: 'smooth' });
+    },
+    
+    // 官方单价计算
+    calculateOfficialPrice() {
+        try {
+            // 收集输入数据
+            const inputData = {
+                monthlyTraffic: parseFloat(document.getElementById('monthlyTraffic').value) || 0,
+                billingCycle: parseInt(document.getElementById('trafficCycle').value) || 0,
+                originalPrice: parseFloat(document.getElementById('originalPrice').value) || 0,
+                exchangeRate: parseFloat(document.getElementById('trafficExchangeRate').value) || 0
+            };
+            
+            // 验证输入数据
+            const validationErrors = OfficialPriceCalculator.validateInputs(inputData);
+            if (validationErrors.length > 0) {
+                showNotification(validationErrors[0], 'error');
+                return;
+            }
+            
+            // 执行计算
+            const result = OfficialPriceCalculator.calculate(inputData);
+            
+            // 更新结果显示
+            this.updateOfficialPriceResults(result);
+            
+            // 显示成功通知
+            showNotification('官方流量单价计算完成', 'success');
+            
+        } catch (error) {
+            console.error('官方单价计算错误:', error);
+            showNotification(error.message, 'error');
+        }
+    },
+    
+    // 更新官方单价计算结果显示
+    updateOfficialPriceResults(result) {
+        // 基础套餐信息
+        document.getElementById('officialMonthlyTraffic').textContent = `${result.monthlyTraffic} GB`;
+        document.getElementById('officialBillingCycle').textContent = getCycleFullText(result.billingCycle);
+        document.getElementById('officialTotalTraffic').textContent = `${result.totalTraffic} GB`;
+        
+        // 价格信息
+        document.getElementById('officialOriginalPrice').textContent = `${result.originalPriceInCNY} 元`;
+        document.getElementById('officialMonthlyPrice').textContent = `${result.monthlyPrice} 元/月`;
+        
+        // 流量单价 - 只显示每100GB的单价
+        document.getElementById('officialUnitPrice100GB').textContent = `${result.unitPricePer100GB} 元/100GB`;
+        
+        // 汇率信息
+        document.getElementById('officialExchangeRate').textContent = result.exchangeRate;
+        
+        // 显示结果区域
+        document.getElementById('officialPriceResult').style.display = 'block';
+        
+        // 滚动到结果区域
+        document.getElementById('officialPriceResult').scrollIntoView({ behavior: 'smooth' });
+    },
+    
+    // 切换计算模式
+    toggleCalculationMode(mode) {
+        const trafficCalculator = document.querySelector('.traffic-calculator');
+        const fullAnalysisBtn = document.getElementById('fullAnalysisMode');
+        const officialPriceBtn = document.getElementById('officialPriceMode');
+        const calculateBtn = document.getElementById('calculateTrafficBtn');
+        const trafficResult = document.getElementById('trafficResult');
+        const officialPriceResult = document.getElementById('officialPriceResult');
+        
+        if (mode === 'official') {
+            // 切换到官方单价模式
+            trafficCalculator.classList.add('official-price-mode');
+            fullAnalysisBtn.classList.remove('active');
+            officialPriceBtn.classList.add('active');
+            calculateBtn.innerHTML = '<i class="fas fa-calculator" slot="icon"></i>计算官方单价';
+            
+            // 隐藏完整分析结果
+            trafficResult.style.display = 'none';
+            
+        } else {
+            // 切换到完整分析模式
+            trafficCalculator.classList.remove('official-price-mode');
+            fullAnalysisBtn.classList.add('active');
+            officialPriceBtn.classList.remove('active');
+            calculateBtn.innerHTML = '<i class="fas fa-chart-bar" slot="icon"></i>计算流量价值';
+            
+            // 隐藏官方单价结果
+            officialPriceResult.style.display = 'none';
+        }
+    },
+    
+    // 清除计算结果
+    clearResults() {
+        // 隐藏所有结果区域
+        document.getElementById('trafficResult').style.display = 'none';
+        document.getElementById('officialPriceResult').style.display = 'none';
+    }
 };
 
 // 初始化流量计算器
@@ -1366,11 +1550,32 @@ function initTrafficCalculator() {
             });
         }
         
-        // 计算按钮点击事件
+        // 模式切换按钮事件
+        const fullAnalysisBtn = document.getElementById('fullAnalysisMode');
+        const officialPriceBtn = document.getElementById('officialPriceMode');
+        
+        if (fullAnalysisBtn) {
+            fullAnalysisBtn.addEventListener('click', () => {
+                TrafficEventHandlers.toggleCalculationMode('full');
+            });
+        }
+        
+        if (officialPriceBtn) {
+            officialPriceBtn.addEventListener('click', () => {
+                TrafficEventHandlers.toggleCalculationMode('official');
+            });
+        }
+
+        // 计算按钮点击事件（根据模式执行不同计算）
         const calculateTrafficBtn = document.getElementById('calculateTrafficBtn');
         if (calculateTrafficBtn) {
             calculateTrafficBtn.addEventListener('click', () => {
-                TrafficEventHandlers.calculateTrafficValue();
+                const trafficCalculator = document.querySelector('.traffic-calculator');
+                if (trafficCalculator.classList.contains('official-price-mode')) {
+                    TrafficEventHandlers.calculateOfficialPrice();
+                } else {
+                    TrafficEventHandlers.calculateTrafficValue();
+                }
             });
         }
         
@@ -1381,6 +1586,14 @@ function initTrafficCalculator() {
                 captureTrafficResult();
             });
         }
+        
+        // 官方单价截图按钮事件
+        const officialPriceScreenshotBtn = document.getElementById('officialPriceScreenshotBtn');
+        if (officialPriceScreenshotBtn) {
+            officialPriceScreenshotBtn.addEventListener('click', () => {
+                captureOfficialPriceResult();
+            });
+        }
     }, 200);
 }
 
@@ -1389,6 +1602,32 @@ function captureTrafficResult() {
     const resultElement = document.getElementById('trafficResult');
     if (!resultElement) {
         showNotification('找不到流量计算结果区域', 'error');
+        return;
+    }
+    
+    html2canvas(resultElement, {
+        backgroundColor: 'var(--md-sys-color-background)',
+        scale: 2,
+        useCORS: true
+    }).then(canvas => {
+        canvas.toBlob(blob => {
+            if (blob) {
+                uploadImage(blob);
+            } else {
+                showNotification('截图生成失败', 'error');
+            }
+        }, 'image/png');
+    }).catch(error => {
+        console.error('截图失败:', error);
+        showNotification('截图失败，请重试', 'error');
+    });
+}
+
+// 官方单价结果截图功能
+function captureOfficialPriceResult() {
+    const resultElement = document.getElementById('officialPriceResult');
+    if (!resultElement) {
+        showNotification('找不到官方单价结果区域', 'error');
         return;
     }
     

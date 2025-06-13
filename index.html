@@ -299,6 +299,17 @@
                         <i class="fas fa-chart-line"></i>
                         VPS流量价值计算器
                     </h2>
+                    <!-- 计算模式切换 -->
+                    <div class="mode-toggle">
+                        <md-chip class="mode-chip active" id="fullAnalysisMode" label>
+                            <i class="fas fa-chart-area" slot="icon"></i>
+                            完整分析
+                        </md-chip>
+                        <md-chip class="mode-chip" id="officialPriceMode" label>
+                            <i class="fas fa-calculator" slot="icon"></i>
+                            官方单价计算
+                        </md-chip>
+                    </div>
                 </div>
                 
                 <div class="input-group">
@@ -312,7 +323,7 @@
                             <i class="fas fa-database" slot="leading-icon"></i>
                         </md-outlined-text-field>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group full-analysis-only">
                         <md-outlined-text-field
                             id="usedTraffic"
                             label="已使用流量"
@@ -390,7 +401,7 @@
                             <i class="fas fa-tag" slot="leading-icon"></i>
                         </md-outlined-text-field>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group full-analysis-only">
                         <md-outlined-text-field
                             id="actualPriceCNY"
                             label="实际价格(人民币)"
@@ -403,7 +414,7 @@
                 </div>
 
                 <div class="input-group">
-                    <div class="form-group">
+                    <div class="form-group full-analysis-only">
                         <md-outlined-text-field
                             id="actualPriceForeign"
                             label="实际价格(外币)"
@@ -441,7 +452,7 @@
                     </div>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group full-analysis-only">
                     <div class="form-group">
                         <md-outlined-text-field
                             id="trafficTransactionDate"
@@ -529,6 +540,88 @@
                                 剩余价值
                             </div>
                             <div id="resultValue" class="result-value md-typescale-headline-small">0.000 元</div>
+                        </div>
+                    </md-card>
+                </div>
+            </section>
+
+            <!-- 官方流量单价计算结果 -->
+            <section id="officialPriceResult" class="official-price-result md-elevation--2" style="display: none;">
+                <div class="result-header">
+                    <h2 class="md-typescale-headline-medium">
+                        <i class="fas fa-tag"></i>
+                        官方流量单价分析
+                    </h2>
+                    <md-icon-button id="officialPriceScreenshotBtn" title="截图上传到图床">
+                        <i class="fas fa-camera"></i>
+                    </md-icon-button>
+                </div>
+                <div class="result-grid">
+                    <!-- 基础套餐信息 -->
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-database"></i>
+                                月流量配额
+                            </div>
+                            <div id="officialMonthlyTraffic" class="result-value md-typescale-body-large">0 GB</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                计费周期
+                            </div>
+                            <div id="officialBillingCycle" class="result-value md-typescale-body-large">- 月</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-chart-bar"></i>
+                                总流量配额
+                            </div>
+                            <div id="officialTotalTraffic" class="result-value md-typescale-body-large">0 GB</div>
+                        </div>
+                    </md-card>
+                    
+                    <!-- 价格信息 -->
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-tag"></i>
+                                套餐原价
+                            </div>
+                            <div id="officialOriginalPrice" class="result-value md-typescale-body-large">0.00 元</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-money-bill"></i>
+                                月均价格
+                            </div>
+                            <div id="officialMonthlyPrice" class="result-value md-typescale-body-large">0.00 元/月</div>
+                        </div>
+                    </md-card>
+                    <!-- 流量单价 -->
+                    <md-card class="result-item highlight">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-coins"></i>
+                                流量单价(每100GB)
+                            </div>
+                            <div id="officialUnitPrice100GB" class="result-value md-typescale-headline-small">0.00 元/100GB</div>
+                        </div>
+                    </md-card>
+                    <md-card class="result-item">
+                        <div class="result-content">
+                            <div class="result-label">
+                                <i class="fas fa-exchange-alt"></i>
+                                汇率信息
+                            </div>
+                            <div id="officialExchangeRate" class="result-value md-typescale-body-large">1.0000</div>
                         </div>
                     </md-card>
                 </div>

@@ -1225,8 +1225,10 @@ md-icon-button i {
 .traffic-calculator .calculator-header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .traffic-calculator .calculator-header h2 {
@@ -1238,6 +1240,75 @@ md-icon-button i {
 }
 
 .traffic-calculator .calculator-header h2 i {
+    font-size: inherit;
+}
+
+/* 模式切换样式 */
+.mode-toggle {
+    display: flex;
+    gap: 0.5rem;
+    background: var(--md-sys-color-surface);
+    border-radius: 20px;
+    padding: 4px;
+    border: 1px solid rgba(var(--md-sys-color-outline-rgb), 0.12);
+}
+
+.mode-chip {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    --md-chip-container-color: transparent;
+    --md-chip-label-text-color: var(--md-sys-color-on-surface-variant);
+    border: none;
+}
+
+.mode-chip:hover {
+    --md-chip-container-color: rgba(var(--md-sys-color-primary-rgb), 0.08);
+    --md-chip-label-text-color: var(--md-sys-color-primary);
+}
+
+.mode-chip.active {
+    --md-chip-container-color: var(--md-sys-color-primary);
+    --md-chip-label-text-color: var(--md-sys-color-on-primary);
+    box-shadow: 0 2px 4px rgba(var(--md-sys-color-primary-rgb), 0.3);
+}
+
+/* 字段显示/隐藏控制 */
+.full-analysis-only {
+    transition: all 0.3s ease;
+}
+
+.official-price-mode .full-analysis-only {
+    display: none !important;
+}
+
+/* 官方单价结果样式 */
+.official-price-result {
+    margin-top: 2rem;
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    padding: 1.5rem;
+    background: var(--md-sys-color-surface-container);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--md-sys-color-outline-rgb), 0.12);
+}
+
+.official-price-result .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.official-price-result .result-header h2 {
+    color: var(--md-sys-color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.official-price-result .result-header h2 i {
     font-size: inherit;
 }
 
@@ -1369,13 +1440,22 @@ md-icon-button {
         gap: 1rem;
     }
     
-    .traffic-result {
+    .traffic-result, .official-price-result {
         position: static;
         margin-top: 1.5rem;
     }
     
-    .traffic-calculator, .traffic-result {
+    .traffic-calculator, .traffic-result, .official-price-result {
         padding: 1.5rem;
+    }
+    
+    .traffic-calculator .calculator-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .mode-toggle {
+        justify-content: center;
     }
 }
 
