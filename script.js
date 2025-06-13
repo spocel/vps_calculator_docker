@@ -1667,51 +1667,75 @@ function initTrafficCalculator() {
 // 流量计算器截图功能
 function captureTrafficResult() {
     const resultElement = document.getElementById('trafficResult');
-    if (!resultElement) {
-        showNotification('找不到流量计算结果区域', 'error');
+    if (!resultElement || resultElement.style.display === 'none') {
+        showNotification('请先计算流量价值再截图', 'error');
         return;
     }
     
+    // 检查是否有有效的计算结果
+    const totalSavedElement = document.getElementById('trafficTotalSaved');
+    if (!totalSavedElement || totalSavedElement.textContent.trim() === '0.00 元') {
+        showNotification('请先计算流量价值再截图', 'error');
+        return;
+    }
+
+    // 显示加载中通知
+    showNotification('正在生成截图...', 'info');
+    
+    // 使用 html2canvas 捕获结果区域，参数与原始截图功能保持一致
     html2canvas(resultElement, {
-        backgroundColor: 'var(--md-sys-color-background)',
-        scale: 2,
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-background') || '#ffffff',
+        scale: 2, // 使用2倍缩放以获得更清晰的图像
+        logging: false,
         useCORS: true
-    }).then(canvas => {
-        canvas.toBlob(blob => {
-            if (blob) {
-                uploadImage(blob);
-            } else {
-                showNotification('截图生成失败', 'error');
-            }
-        }, 'image/png');
-    }).catch(error => {
-        console.error('截图失败:', error);
-        showNotification('截图失败，请重试', 'error');
+    }).then(function(canvas) {
+        showNotification('截图生成成功，正在上传...', 'info');
+        
+        // 转换为 base64 数据 URL，与原始函数保持一致
+        const imageData = canvas.toDataURL('image/png');
+        
+        // 上传到选定的图床
+        uploadImage(imageData);
+    }).catch(function(error) {
+        console.error('截图生成失败:', error);
+        showNotification('截图生成失败，请重试', 'error');
     });
 }
 
 // 官方单价结果截图功能
 function captureOfficialPriceResult() {
     const resultElement = document.getElementById('officialPriceResult');
-    if (!resultElement) {
-        showNotification('找不到官方单价结果区域', 'error');
+    if (!resultElement || resultElement.style.display === 'none') {
+        showNotification('请先计算官方单价再截图', 'error');
         return;
     }
     
+    // 检查是否有有效的计算结果
+    const unitPriceElement = document.getElementById('officialUnitPrice100GB');
+    if (!unitPriceElement || unitPriceElement.textContent.trim() === '0.00 元/100GB') {
+        showNotification('请先计算官方单价再截图', 'error');
+        return;
+    }
+
+    // 显示加载中通知
+    showNotification('正在生成截图...', 'info');
+    
+    // 使用 html2canvas 捕获结果区域，参数与原始截图功能保持一致
     html2canvas(resultElement, {
-        backgroundColor: 'var(--md-sys-color-background)',
-        scale: 2,
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-background') || '#ffffff',
+        scale: 2, // 使用2倍缩放以获得更清晰的图像
+        logging: false,
         useCORS: true
-    }).then(canvas => {
-        canvas.toBlob(blob => {
-            if (blob) {
-                uploadImage(blob);
-            } else {
-                showNotification('截图生成失败', 'error');
-            }
-        }, 'image/png');
-    }).catch(error => {
-        console.error('截图失败:', error);
-        showNotification('截图失败，请重试', 'error');
+    }).then(function(canvas) {
+        showNotification('截图生成成功，正在上传...', 'info');
+        
+        // 转换为 base64 数据 URL，与原始函数保持一致
+        const imageData = canvas.toDataURL('image/png');
+        
+        // 上传到选定的图床
+        uploadImage(imageData);
+    }).catch(function(error) {
+        console.error('截图生成失败:', error);
+        showNotification('截图生成失败，请重试', 'error');
     });
 }
