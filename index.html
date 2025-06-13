@@ -312,6 +312,7 @@
                     </div>
                 </div>
                 
+                <!-- 官方单价计算基础输入（始终显示） -->
                 <div class="input-group">
                     <div class="form-group">
                         <md-outlined-text-field
@@ -323,19 +324,6 @@
                             <i class="fas fa-database" slot="leading-icon"></i>
                         </md-outlined-text-field>
                     </div>
-                    <div class="form-group full-analysis-only">
-                        <md-outlined-text-field
-                            id="usedTraffic"
-                            label="已使用流量"
-                            type="number"
-                            step="0.1"
-                            supporting-text="单位：GB">
-                            <i class="fas fa-chart-pie" slot="leading-icon"></i>
-                        </md-outlined-text-field>
-                    </div>
-                </div>
-
-                <div class="input-group">
                     <div class="form-group">
                         <md-outlined-select id="trafficCurrency" label="币种">
                             <i class="fas fa-globe" slot="leading-icon"></i>
@@ -374,6 +362,9 @@
                             </md-select-option>
                         </md-outlined-select>
                     </div>
+                </div>
+
+                <div class="input-group">
                     <div class="form-group">
                         <md-outlined-text-field
                             id="trafficExchangeRate"
@@ -388,9 +379,6 @@
                             </md-icon-button>
                         </md-outlined-text-field>
                     </div>
-                </div>
-
-                <div class="input-group">
                     <div class="form-group">
                         <md-outlined-text-field
                             id="originalPrice"
@@ -401,29 +389,9 @@
                             <i class="fas fa-tag" slot="leading-icon"></i>
                         </md-outlined-text-field>
                     </div>
-                    <div class="form-group full-analysis-only">
-                        <md-outlined-text-field
-                            id="actualPriceCNY"
-                            label="实际价格(人民币)"
-                            type="number"
-                            step="0.01"
-                            supporting-text="优先填写人民币">
-                            <i class="fas fa-yen-sign" slot="leading-icon"></i>
-                        </md-outlined-text-field>
-                    </div>
                 </div>
 
                 <div class="input-group">
-                    <div class="form-group full-analysis-only">
-                        <md-outlined-text-field
-                            id="actualPriceForeign"
-                            label="实际价格(外币)"
-                            type="number"
-                            step="0.01"
-                            supporting-text="可选，若未填人民币价格">
-                            <i class="fas fa-money-bill" slot="leading-icon"></i>
-                        </md-outlined-text-field>
-                    </div>
                     <div class="form-group">
                         <md-outlined-select id="trafficCycle" label="计费周期">
                             <i class="fas fa-redo" slot="leading-icon"></i>
@@ -449,6 +417,46 @@
                                 <div slot="headline">三年付</div>
                             </md-select-option>
                         </md-outlined-select>
+                    </div>
+                    <div class="form-group official-price-placeholder">
+                        <!-- 在官方单价模式下，这里是空占位，保持布局平衡 -->
+                    </div>
+                </div>
+
+                <!-- 完整分析专用输入（仅在完整分析模式下显示） -->
+                <div class="input-group full-analysis-only">
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="usedTraffic"
+                            label="已使用流量"
+                            type="number"
+                            step="0.1"
+                            supporting-text="单位：GB">
+                            <i class="fas fa-chart-pie" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="actualPriceCNY"
+                            label="实际价格(人民币)"
+                            type="number"
+                            step="0.01"
+                            supporting-text="优先填写人民币">
+                            <i class="fas fa-yen-sign" slot="leading-icon"></i>
+                        </md-outlined-text-field>
+                    </div>
+                </div>
+
+                <div class="input-group full-analysis-only">
+                    <div class="form-group">
+                        <md-outlined-text-field
+                            id="actualPriceForeign"
+                            label="实际价格(外币)"
+                            type="number"
+                            step="0.01"
+                            supporting-text="可选，若未填人民币价格">
+                            <i class="fas fa-money-bill" slot="leading-icon"></i>
+                        </md-outlined-text-field>
                     </div>
                 </div>
 

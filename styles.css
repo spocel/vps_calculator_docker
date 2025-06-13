@@ -1281,6 +1281,14 @@ md-icon-button i {
     display: none !important;
 }
 
+.official-price-placeholder {
+    visibility: hidden;
+}
+
+.official-price-mode .official-price-placeholder {
+    display: none !important;
+}
+
 /* 官方单价结果样式 */
 .official-price-result {
     margin-top: 2rem;
